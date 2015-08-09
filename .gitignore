@@ -1,0 +1,14 @@
+# Ignore stuff that is automatically generated
+*.o
+*.ali
+*.db*
+*.gcov
+b__*
+*.cgpr
+*.cswi
+*.gcno
+*.gcda
+gcov_input.txt
+*-loc.xml
+*.bexch
+main
