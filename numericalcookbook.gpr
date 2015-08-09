@@ -7,7 +7,11 @@ project NumericalCookbook is
    end Linker;
 
    package Ide is
+<<<<<<< HEAD
       for Vcs_Kind use "Auto";
+=======
+      for Vcs_Kind use "Git";
+>>>>>>> b7f06eb1e4d91e55cba7ccc35a44041156811e08
    end Ide;
 
    package Pretty_Printer is

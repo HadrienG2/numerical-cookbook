@@ -24,7 +24,10 @@ package Cookbook.Linear_Equations is
        Pre => (Matrix'Length (1) = Matrix'Length (2)),
        Post => (Matrix * Matrix'Old = F_Containers.Identity_Matrix (Matrix'Length (1)));
 
+<<<<<<< HEAD
    -- Test the functions within this package
+=======
+>>>>>>> b7f06eb1e4d91e55cba7ccc35a44041156811e08
    procedure Test;
 
 end Cookbook.Linear_Equations;

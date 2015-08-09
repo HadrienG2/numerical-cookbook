@@ -25,6 +25,11 @@ package body Cookbook.Linear_Equations is
       Initial_Pivot_Rows : array (Pivot_Index) of Mat_Row; -- Named "indxr" in NR
       Initial_Pivot_Cols : array (Pivot_Index) of Mat_Col; -- Named "indxc" in NR
    begin
+<<<<<<< HEAD
+=======
+      -- TODO : Check the code against Numerical Recipes for logical consistency, and investigate remaining loose ends
+
+>>>>>>> b7f06eb1e4d91e55cba7ccc35a44041156811e08
       -- Perform pivoting and matrix reduction Mat_Size times, deriving the inverse matrix in scrambled column order
       declare
          -- We'll be looking for a pivot, which is defined as a row and a column
