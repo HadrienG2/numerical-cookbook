@@ -1,0 +1,30 @@
+project NumericalCookbook is
+
+   for Main use ("main.adb");
+
+   package Linker is
+      for Default_Switches ("ada") use ("-g", "-fprofile-generate");
+   end Linker;
+
+   package Ide is
+      for Vcs_Kind use "Git";
+   end Ide;
+
+   package Pretty_Printer is
+      for Default_Switches ("ada") use ("-M120");
+   end Pretty_Printer;
+
+   package Builder is
+      for Default_Switches ("ada") use ("-s", "-j2", "-k", "-g");
+   end Builder;
+
+   package Compiler is
+      for Default_Switches ("ada") use ("-gnatwad.fh.h.kl.st.u.w", "-gnatVa", "-gnato", "-fstack-check", "-gnatE", "-g", "-gnat12", "-ftest-coverage", "-gnatyaAbBdCefhiklnOptx", "-fprofile-arcs", "-gnata");
+   end Compiler;
+
+   package Binder is
+      for Default_Switches ("ada") use ("-E", "-r");
+   end Binder;
+
+end NumericalCookbook;
+
