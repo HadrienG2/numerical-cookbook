@@ -69,6 +69,7 @@ private
    type LU_Decomposition (First_Row, Last_Row, First_Col, Last_Col : Index_Type) is
       record
          Decomposition : F_Containers.Matrix (First_Row .. Last_Row, First_Col .. Last_Col);
+         Determinant_Multiplier : Float_Type;
          -- TODO : Add components to store permutations, etc.
       end record;
 

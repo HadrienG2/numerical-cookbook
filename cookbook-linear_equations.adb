@@ -132,6 +132,23 @@ package body Cookbook.Linear_Equations is
    end Gauss_Jordan_Elimination;
 
 
+   function Crout_LU_Decomposition (Matrix : F_Containers.Matrix) return LU_Decomposition is
+   begin
+      return LU : LU_Decomposition (First_Row => Matrix'First (1),
+                                    Last_Row => Matrix'Last (1),
+                                    First_Col => Matrix'First (2),
+                                    Last_Col => Matrix'Last (2)) := (Decomposition => Matrix,
+                                                                     Determinant_Multiplier => 1.0) do
+         -- TODO : Compute row scaling factor, raise exception if matrix is singular
+         -- TODO : "Outermost kij loop"
+         -- TODO :    - Search largest pivot element (with scaling taken into account), memorize its original position
+         -- TODO :    - Swap rows to put it on the matrix diagonal, acknowledging the effect on scaling (value swap) and determinant (sign change)
+         -- TODO :    - Unlike in NR, raise exception if matrix proves singular here too
+         -- TODO :    - Divide remaining rows by pivot element and reduce remaining submatrix
+      end return;
+   end Crout_LU_Decomposition;
+
+
    procedure Test is
       package Test_Runner is new Cookbook.Test;
       use Test_Runner;
