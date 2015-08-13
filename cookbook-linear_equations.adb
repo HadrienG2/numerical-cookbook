@@ -124,11 +124,13 @@ package body Cookbook.Linear_Equations is
       end loop;
    end Gauss_Jordan_Elimination;
 
+
    procedure Gauss_Jordan_Elimination (Matrix : in out F_Containers.Matrix) is
       No_Right_Hand_Side : F_Containers.Matrix (Matrix'First (1) .. Matrix'Last (1), Index_Type'Last .. Index_Type'Last - 1);
    begin
       Gauss_Jordan_Elimination (Matrix, No_Right_Hand_Side);
    end Gauss_Jordan_Elimination;
+
 
    procedure Test is
       package Test_Runner is new Cookbook.Test;

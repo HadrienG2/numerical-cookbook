@@ -10,6 +10,7 @@ package body Cookbook.Generic_Containers is
       end return;
    end Identity_Matrix;
 
+
    function "*" (Left : Item_Type; Right : Matrix) return Matrix is
    begin
       return Result : Matrix (Right'Range (1), Right'Range (2)) do
@@ -21,6 +22,7 @@ package body Cookbook.Generic_Containers is
       end return;
    end "*";
 
+
    function "*" (Left : Item_Type; Right : Vector) return Vector is
    begin
       return Result : Vector (Right'Range) do
@@ -29,6 +31,7 @@ package body Cookbook.Generic_Containers is
          end loop;
       end return;
    end "*";
+
 
    function "*" (Left, Right : Matrix) return Matrix is
    begin
@@ -43,6 +46,7 @@ package body Cookbook.Generic_Containers is
       end return;
    end "*";
 
+
    function "*" (Left : Matrix; Right : Vector) return Vector is
    begin
       return Result : Vector (Left'Range (1)) := (others => Zero) do
@@ -54,6 +58,7 @@ package body Cookbook.Generic_Containers is
       end return;
    end "*";
 
+
    function "*" (Left : Vector; Right : Matrix) return Vector is
    begin
       return Result : Vector (Right'Range (2)) := (others => Zero) do
@@ -64,6 +69,7 @@ package body Cookbook.Generic_Containers is
          end loop;
       end return;
    end "*";
+
 
    function "*" (Left, Right : Vector) return Item_Type is
    begin
