@@ -61,7 +61,7 @@ package Cookbook.Linear_Equations is
 
 private
 
-   -- NOTE : Ideally, we would specify the matrix offset and size instead of the full matrix bounds, to avoid information duplication between Last_Row
+   -- Ideally, we would specify the matrix offset and size instead of the full matrix bounds, to avoid information duplication between Last_Row
    -- and Last_Col along with a risk of ending up with a non-square matrix in the event of a coding error.
    --
    -- However, the rules of Ada 2012 (RM12 3.8.12/3) forbid the use of expressions containing multiple discriminants, like "First_Row + Mat_Size",
@@ -71,5 +71,8 @@ private
          Decomposition : F_Containers.Matrix (First_Row .. Last_Row, First_Col .. Last_Col);
          -- TODO : Add components to store permutations, etc.
       end record;
+
+   function Matrix_Size (LU : LU_Decomposition) return Size_Type is
+      (LU.Last_Row - LU.First_Row + 1);
 
 end Cookbook.Linear_Equations;
