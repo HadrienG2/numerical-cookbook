@@ -10,6 +10,7 @@ generic
    type Index_Type is range <>;
    type Size_Type is range <>; -- Must include 0, obviously
    with function "+" (A : Index_Type; B : Size_Type) return Index_Type is <>;
+   with function "-" (A, B : Index_Type) return Size_Type is <>;
    with function "+" (B : Size_Type) return Index_Type is <>;
 
 package Cookbook is
