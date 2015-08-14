@@ -31,7 +31,9 @@ package Cookbook is
         (if A < B then A else B);
 
       procedure Swap (A, B : in out T)
-        with Inline;
+        with
+          Post => (A = B'Old and then B = A'Old),
+          Inline;
 
       function Sign (A, B : T) return T is
         (if B < 0.0 then -abs A else abs A);
