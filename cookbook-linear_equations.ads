@@ -66,10 +66,12 @@ private
    --
    -- However, the rules of Ada 2012 (RM12 3.8.12/3) forbid the use of expressions containing multiple discriminants, like "First_Row + Mat_Size",
    -- in many scenarios including the definition of array boundaries.
+   type Index_Array is array (Index_Type range <>) of Index_Type;
    type LU_Decomposition (First_Row, Last_Row, First_Col, Last_Col : Index_Type) is
       record
          Decomposition : F_Containers.Matrix (First_Row .. Last_Row, First_Col .. Last_Col);
          Determinant_Multiplier : Float_Type;
+         Initial_Row_Positions : Index_Array (First_Row .. Last_Row);
          -- TODO : Add components to store permutations, etc.
       end record;
 
