@@ -23,30 +23,30 @@ package body Cookbook.Linear_Equations is
             -- First, determine the implicit scaling of each matrix row, as defined by its largest matrix element
             for Row in LU_Row loop
                declare
-                  Current_Row_Scaling : Float_Type := 0.0;
+                  Current_Row_Magnitude : Float_Type := 0.0;
                begin
                   -- Look for the largest element in each row
                   for Col in LU_Col loop
                      declare
-                        Item_Scaling : Float_Type := abs LU.Decomposition (Row, Col);
+                        Item_Magnitude : Float_Type := abs LU.Decomposition (Row, Col);
                      begin
-                        if Item_Scaling > Current_Row_Scaling then
-                           Current_Row_Scaling := Item_Scaling;
+                        if Item_Magnitude > Current_Row_Magnitude then
+                           Current_Row_Magnitude := Item_Magnitude;
                         end if;
                      end;
                   end loop;
 
                   -- If all elements in the row are zero, the matrix is singular and it's pointless to continue.
                   -- Otherwise, save the scaling of that row and move on.
-                  if Current_Row_Scaling = 0.0 then
+                  if Current_Row_Magnitude = 0.0 then
                      raise Singular_Matrix;
                   else
-                     Rows_Scaling (Row) := Current_Row_Scaling;
+                     Rows_Scaling (Row) := 1.0 / Current_Row_Magnitude;
                   end if;
                end;
             end loop;
 
-            -- Column by column, operating simultaneously on identically numbered rows, reduce the matrix copy to its LU decomposition.
+            -- Column by column, and operating simultaneously on identically numbered rows, reduce the matrix copy to its LU decomposition.
             for Pivot_Col in LU_Col loop
                declare
                   Pivot_Row : LU_Row;
@@ -66,13 +66,15 @@ package body Cookbook.Linear_Equations is
                         end;
                      end loop;
 
-                     -- If we can't find anything better than zero, it means that the matrix is singular. Unlike NR, I choose to consistently raise.
+                     -- If we can't find anything better than zero, it means that the matrix is singular.
+                     -- Unlike NR, I choose to consistently raise an exception when singularities are encountered.
                      if Scaled_Pivot_Abs = 0.0 then
                         raise Singular_Matrix;
                      end if;
                   end;
 
-                  -- If the pivot is not on the diagonal, put it there by swapping rows. Note that this also changes determinant sign and row scaling.
+                  -- If the pivot is not on the diagonal, put it there by swapping rows.
+                  -- Properly account for the fact that this also changes determinant sign and row scaling.
                   LU.Initial_Row_Positions (Col_To_Row (Pivot_Col)) := Pivot_Row;
                   if Pivot_Row /= Col_To_Row (Pivot_Col) then
                      F_Containers.Swap_Rows (LU.Decomposition, Pivot_Row, Col_To_Row (Pivot_Col));
@@ -85,12 +87,12 @@ package body Cookbook.Linear_Equations is
                   declare
                      Pivot_Element : Float_Type := LU.Decomposition (Pivot_Row, Pivot_Col);
                   begin
-                     for Row in Pivot_Row + Index_Type'(1) .. LU.Last_Row loop
+                     for Row in LU_Row'Succ (Pivot_Row) .. LU.Last_Row loop
                         LU.Decomposition (Row, Pivot_Col) := LU.Decomposition (Row, Pivot_Col) / Pivot_Element;
                         declare
                            Pivot_Col_Value : Float_Type := LU.Decomposition (Row, Pivot_Col);
                         begin
-                           for Col in Pivot_Col + Index_Type'(1) .. LU.Last_Col loop
+                           for Col in LU_Col'Succ (Pivot_Col) .. LU.Last_Col loop
                               LU.Decomposition (Row, Col) := LU.Decomposition (Row, Col) - Pivot_Col_Value*LU.Decomposition (Pivot_Row, Col);
                            end loop;
                         end;
