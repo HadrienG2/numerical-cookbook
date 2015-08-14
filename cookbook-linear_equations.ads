@@ -9,23 +9,6 @@ package Cookbook.Linear_Equations is
 
    Singular_Matrix : exception;
 
-   -- Linear equation solver using in place Gauss-Jordan elimination.
-   --   * Takes as input a square matrix A, and optionally a set of right-hand-side vectors Bm packed in a matrix
-   --   * Stores the inverse of A in place of A, and the solution vectors Xm such that A*Xm = Bm in place of the Bm
-   -- Due to the in-place nature of the algorithm, if an exception arises, the original matrices should be considered destroyed
-   --
-   -- Even if the preconditions are satisfied, the function may still throw Singular_Matrix if the input is singular.
-   procedure Gauss_Jordan_Elimination (Matrix : in out F_Containers.Matrix; Right_Hand_Vectors : in out F_Containers.Matrix)
-     with
-       Pre => (Matrix'Length (1) = Matrix'Length (2) and then
-                     Matrix'Length (1) = Right_Hand_Vectors'Length (1)),
-       Post => (Matrix * Matrix'Old = F_Containers.Identity_Matrix (Matrix'Length (1)) and then
-                  Right_Hand_Vectors = Matrix * Right_Hand_Vectors'Old);
-   procedure Gauss_Jordan_Elimination (Matrix : in out F_Containers.Matrix)
-     with
-       Pre => (Matrix'Length (1) = Matrix'Length (2)),
-       Post => (Matrix * Matrix'Old = F_Containers.Identity_Matrix (Matrix'Length (1)));
-
    -- LU decompositions are stored inside an opaque object, which allows for some storage optimizations.
    -- Components are indirectly available through member functions.
    type LU_Decomposition(<>) is private
@@ -56,7 +39,7 @@ package Cookbook.Linear_Equations is
    -- TODO : Add RHS solver, inverse computation, determinant, and all that jazz, with appropriate pre/postconditions
 
 
-   -- Test the functions within this package
+   -- TODO : Once everything has stabilized, test LU decomposition too
    procedure Test;
 
 private

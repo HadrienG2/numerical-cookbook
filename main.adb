@@ -2,6 +2,7 @@ with Cookbook;
 with Cookbook.Float_Containers;
 with Cookbook.Float_Utility;
 with Cookbook.Linear_Equations;
+with Cookbook.Linear_Equations.Gauss_Jordan;
 
 procedure Main is
    -- We take float equality as equality up to a difference of one significant digit for nonzero numbers,
@@ -22,6 +23,7 @@ procedure Main is
    package Float_Containers is new Float_Cookbook.Float_Containers;
    package Linear_Equations is new Float_Cookbook.Linear_Equations (F_Containers => Float_Containers,
                                                                     F_Utility => Float_Utility);
+   package Gauss_Jordan is new Linear_Equations.Gauss_Jordan;
 begin
    null;
 end Main;
