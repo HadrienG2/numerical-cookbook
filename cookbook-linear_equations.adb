@@ -98,7 +98,7 @@ package body Cookbook.Linear_Equations is
             for Row in Mat_Row loop
                if Row /= Pivot_Row then
                   declare
-                     Tmp : constant Float_Type := Matrix (Row, Pivot_Col);
+                     Tmp : constant Float_Type := Matrix (Row, Pivot_Col); -- Named "dum" in NR
                   begin
                      Matrix (Row, Pivot_Col) := 0.0;
                      for Col in Mat_Col loop
@@ -134,17 +134,52 @@ package body Cookbook.Linear_Equations is
 
    function Crout_LU_Decomposition (Matrix : F_Containers.Matrix) return LU_Decomposition is
    begin
+      -- We begin by declaring the LU object, including the matrix copy, and will never work on the original
+      -- matrix directly afterwards. This eases changing its definition later (e.g. using different row/column indexing).
       return LU : LU_Decomposition (First_Row => Matrix'First (1),
                                     Last_Row => Matrix'Last (1),
                                     First_Col => Matrix'First (2),
                                     Last_Col => Matrix'Last (2)) := (Decomposition => Matrix,
                                                                      Determinant_Multiplier => 1.0) do
-         -- TODO : Compute row scaling factor, raise exception if matrix is singular
-         -- TODO : "Outermost kij loop"
-         -- TODO :    - Search largest pivot element (with scaling taken into account), memorize its original position
-         -- TODO :    - Swap rows to put it on the matrix diagonal, acknowledging the effect on scaling (value swap) and determinant (sign change)
-         -- TODO :    - Unlike in NR, raise exception if matrix proves singular here too
-         -- TODO :    - Divide remaining rows by pivot element and reduce remaining submatrix
+         declare
+            -- As for Gauss-Jordan elimination, we'll need to iterate over matrix rows and columns, so let's prepare for it
+            subtype LU_Row is Index_Type range LU.First_Row .. LU.Last_Row;
+            subtype LU_Col is Index_Type range LU.First_Col .. LU.Last_Col;
+
+            -- We'll also need to memorize the scaling of matrix rows (magnitude of largest element)
+            Rows_Scaling : array (LU_Row) of Float_Type;
+         begin
+            -- First, determine the implicit scaling of each matrix row, as defined by its largest matrix element
+            for Row in LU_Row loop
+               declare
+                  Current_Row_Scaling : Float_Type := 0.0;
+               begin
+                  -- Look for the largest element in each row
+                  for Col in LU_Col loop
+                     declare
+                        Item_Scaling : Float_Type := abs LU.Decomposition (Row, Col);
+                     begin
+                        if Item_Scaling > Current_Row_Scaling then
+                           Current_Row_Scaling := Item_Scaling;
+                        end if;
+                     end;
+                  end loop;
+
+                  -- If all elements in the row are zero, the matrix is singular and it's pointless to continue.
+                  -- Otherwise, save the scaling of that row and move on.
+                  if Current_Row_Scaling = 0.0 then
+                     raise Singular_Matrix;
+                  else
+                     Rows_Scaling (Row) := Current_Row_Scaling;
+                  end if;
+               end;
+            end loop;
+
+            -- TODO : "Outermost kij loop"
+            -- TODO :    - Search largest pivot element (with scaling taken into account), memorize its original position
+            -- TODO :    - Swap rows to put it on the matrix diagonal, acknowledging the effect on scaling (value swap) and determinant (sign change)
+            -- TODO :    - Unlike in NR, raise exception if matrix proves singular here too
+            -- TODO :    - Divide remaining rows by pivot element and reduce remaining submatrix
       end return;
    end Crout_LU_Decomposition;
 
