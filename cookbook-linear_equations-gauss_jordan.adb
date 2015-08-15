@@ -141,7 +141,7 @@ package body Cookbook.Linear_Equations.Gauss_Jordan is
 
          -- Try inverting a basic 1x1 matrix, with and without a right-hand side
          declare
-            Init_1x1 : constant F_Containers.Matrix := 0.1 * F_Containers.Identity_Matrix (1);
+            Init_1x1 : constant F_Containers.Matrix (7 .. 7, 9 .. 9) := 0.1 * F_Containers.Identity_Matrix (1);
             Mat_1x1 : F_Containers.Matrix := Init_1x1;
             RHS_1x2 : F_Containers.Matrix (3 .. 3, 5 .. 6) := (3 => (5 => 5.0, 6 => 10.0));
          begin
@@ -155,7 +155,7 @@ package body Cookbook.Linear_Equations.Gauss_Jordan is
 
          -- Try it with a diagonal 2x2 matrix
          declare
-            Mat_2x2 : F_Containers.Matrix := 0.5 * F_Containers.Identity_Matrix (2);
+            Mat_2x2 : F_Containers.Matrix (11 .. 12, 15 .. 16) := 0.5 * F_Containers.Identity_Matrix (2);
             RHS_2x2 : F_Containers.Matrix (42 .. 43, 65 .. 66) := (42 => (65 => 5.0, 66 => 0.0), 43 => (65 => 0.0, 66 => 10.0));
          begin
             Mat_2x2 (Mat_2x2'Last (1), Mat_2x2'Last (2)) := 4.0;
@@ -192,7 +192,6 @@ package body Cookbook.Linear_Equations.Gauss_Jordan is
       procedure Test_Linear_Equations_Package is
       begin
          Test_Package_Element (To_Entity_Name ("Gauss_Jordan_Elimination"), Test_Gauss_Jordan'Access);
-         -- TODO : Test other linear equation solvers as they are added
       end Test_Linear_Equations_Package;
    begin
       Test_Package (To_Entity_Name ("Linear_Equations.Gauss_Jordan"), Test_Linear_Equations_Package'Access);
