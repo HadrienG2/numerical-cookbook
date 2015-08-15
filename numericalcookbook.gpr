@@ -19,7 +19,7 @@ project NumericalCookbook is
    end Builder;
 
    package Compiler is
-      for Default_Switches ("ada") use ("-gnatwad.fh.h.kl.st.u.w", "-gnatVa", "-gnato", "-fstack-check", "-gnatE", "-g", "-gnat12", "-ftest-coverage", "-gnatyaAbBdCefhiklnOptx", "-fprofile-arcs", "-gnata");
+      for Default_Switches ("ada") use ("-gnatwad.fh.h.kl.st.u.w", "-gnatVa", "-gnato", "-g", "-gnat12", "-gnatyaAbBdCefhiklnOptx", "-gnata", "-ftest-coverage", "-fprofile-arcs", "-gnatE", "-fstack-check");
    end Compiler;
 
    package Binder is

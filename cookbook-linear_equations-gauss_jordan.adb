@@ -70,8 +70,8 @@ package body Cookbook.Linear_Equations.Gauss_Jordan is
             Initial_Pivot_Rows (Current_Pivot) := Pivot_Row;
             Initial_Pivot_Cols (Current_Pivot) := Pivot_Col;
             if Pivot_Row /= Pivot_Col then
-               F_Containers.Swap_Rows (Matrix, Pivot_Row, Mat_Col_To_Mat_Row (Pivot_Col));
-               F_Containers.Swap_Rows (Right_Hand_Vectors, Mat_Row_To_RHS_Row (Pivot_Row), Mat_Col_To_RHS_Row (Pivot_Col));
+               Swap_Rows (Matrix, Pivot_Row, Mat_Col_To_Mat_Row (Pivot_Col));
+               Swap_Rows (Right_Hand_Vectors, Mat_Row_To_RHS_Row (Pivot_Row), Mat_Col_To_RHS_Row (Pivot_Col));
             end if;
             Pivot_Row := Mat_Col_To_Mat_Row (Pivot_Col);
 
@@ -110,7 +110,7 @@ package body Cookbook.Linear_Equations.Gauss_Jordan is
       -- At this stage, the solution vectors are correct, but the inverse matrix may have suffered column swaps and must be unscrambled
       for Current_Pivot in reverse Pivot_Index loop
          if Initial_Pivot_Rows (Current_Pivot) /= Mat_Col_To_Mat_Row (Initial_Pivot_Cols (Current_Pivot)) then
-            F_Containers.Swap_Cols (Matrix, Mat_Row_To_Mat_Col (Initial_Pivot_Rows (Current_Pivot)), Initial_Pivot_Cols (Current_Pivot));
+            Swap_Cols (Matrix, Mat_Row_To_Mat_Col (Initial_Pivot_Rows (Current_Pivot)), Initial_Pivot_Cols (Current_Pivot));
          end if;
       end loop;
    end Gauss_Jordan_Elimination;
