@@ -155,10 +155,9 @@ package body Cookbook.Linear_Equations.Gauss_Jordan is
 
          -- Try it with a diagonal 2x2 matrix
          declare
-            Mat_2x2 : F_Containers.Matrix (11 .. 12, 15 .. 16) := 0.5 * F_Containers.Identity_Matrix (2);
+            Mat_2x2 : F_Containers.Matrix (11 .. 12, 15 .. 16) := ((0.5, 0.0), (0.0, 4.0));
             RHS_2x2 : F_Containers.Matrix (42 .. 43, 65 .. 66) := (42 => (65 => 5.0, 66 => 0.0), 43 => (65 => 0.0, 66 => 10.0));
          begin
-            Mat_2x2 (Mat_2x2'Last (1), Mat_2x2'Last (2)) := 4.0;
             Gauss_Jordan_Elimination (Mat_2x2, RHS_2x2);
             Test_Element_Property (Mat_2x2 (Mat_2x2'First (1), Mat_2x2'First (2)) = 2.0, "should work with a diagonal 2x2 matrix");
             Test_Element_Property (Mat_2x2 (Mat_2x2'First (1), Mat_2x2'Last (2)) = 0.0, "should work with a diagonal 2x2 matrix");
@@ -172,11 +171,9 @@ package body Cookbook.Linear_Equations.Gauss_Jordan is
 
          -- Try it with a non-diagonal matrix
          declare
-            Mat_2x2 : F_Containers.Matrix := 0.0 * F_Containers.Identity_Matrix (2);
+            Mat_2x2 : F_Containers.Matrix (50 .. 51, 3 .. 4) := ((0.0, 4.0), (0.5, 0.0));
             RHS_2x2 : F_Containers.Matrix (42 .. 43, 65 .. 66) := (42 => (65 => 5.0, 66 => 0.0), 43 => (65 => 0.0, 66 => 10.0));
          begin
-            Mat_2x2 (Mat_2x2'First (1), Mat_2x2'Last (2)) := 4.0;
-            Mat_2x2 (Mat_2x2'Last (1), Mat_2x2'First (2)) := 0.5;
             Gauss_Jordan_Elimination (Mat_2x2, RHS_2x2);
             Test_Element_Property (Mat_2x2 (Mat_2x2'First (1), Mat_2x2'First (2)) = 0.0, "should work with a non-diagonal 2x2 matrix");
             Test_Element_Property (Mat_2x2 (Mat_2x2'First (1), Mat_2x2'Last (2)) = 2.0, "should work with a non-diagonal 2x2 matrix");
