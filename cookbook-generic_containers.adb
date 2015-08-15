@@ -1,7 +1,5 @@
 package body Cookbook.Generic_Containers is
 
-   package Item_Utility is new Cookbook.Generic_Utility (Item_Type);
-
 
    function "*" (Left : Item_Type; Right : Matrix) return Matrix is
    begin
@@ -71,21 +69,6 @@ package body Cookbook.Generic_Containers is
          end loop;
       end return;
    end "*";
-
-   procedure Swap_Rows (Mat : in out Matrix; Row_1, Row_2 : Index_Type) is
-   begin
-      for Col in Mat'Range (2) loop
-         Item_Utility.Swap (Mat (Row_1, Col), Mat (Row_2, Col));
-      end loop;
-   end Swap_Rows;
-
-
-   procedure Swap_Cols (Mat : in out Matrix; Col_1, Col_2 : Index_Type) is
-   begin
-      for Row in Mat'Range (1) loop
-         Item_Utility.Swap (Mat (Row, Col_1), Mat (Row, Col_2));
-      end loop;
-   end Swap_Cols;
 
 
    function Identity_Matrix (Size : Size_Type) return Matrix is
