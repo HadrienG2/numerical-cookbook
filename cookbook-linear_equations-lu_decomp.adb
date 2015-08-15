@@ -1,3 +1,5 @@
+with Cookbook.Test;
+
 package body Cookbook.Linear_Equations.LU_Decomp is
 
    function Is_LU_Decomposition_Of (LU : LU_Decomposition; Original_Matrix : F_Containers.Matrix) return Boolean is
@@ -14,7 +16,7 @@ package body Cookbook.Linear_Equations.LU_Decomp is
                                        Last_Row => Matrix'Last (1),
                                        First_Col => Matrix'First (2),
                                        Last_Col => Matrix'Last (2),
-                                       Decomposition => Matrix,
+                                       Data => Matrix,
                                        Determinant_Multiplier => 1.0,
                                        Initial_Row_Positions => <>) do
          declare
@@ -34,7 +36,7 @@ package body Cookbook.Linear_Equations.LU_Decomp is
                   -- Look for the largest element in each row
                   for Col in LU_Col loop
                      declare
-                        Item_Magnitude : constant Float_Type := abs LU.Decomposition (Row, Col);
+                        Item_Magnitude : constant Float_Type := abs LU.Data (Row, Col);
                      begin
                         if Item_Magnitude > Current_Row_Magnitude then
                            Current_Row_Magnitude := Item_Magnitude;
@@ -63,7 +65,7 @@ package body Cookbook.Linear_Equations.LU_Decomp is
                   begin
                      for Row in Col_To_Row (Pivot_Col) .. LU.Last_Row loop
                         declare
-                           Scaled_Item_Abs : constant Float_Type := Rows_Scaling (Row) * abs LU.Decomposition (Row, Pivot_Col);
+                           Scaled_Item_Abs : constant Float_Type := Rows_Scaling (Row) * abs LU.Data (Row, Pivot_Col);
                         begin
                            if Scaled_Item_Abs > Scaled_Pivot_Abs then
                               Scaled_Pivot_Abs := Scaled_Item_Abs;
@@ -83,7 +85,7 @@ package body Cookbook.Linear_Equations.LU_Decomp is
                   -- Properly account for the fact that this also changes determinant sign and row scaling.
                   LU.Initial_Row_Positions (Col_To_Row (Pivot_Col)) := Pivot_Row;
                   if Pivot_Row /= Col_To_Row (Pivot_Col) then
-                     Swap_Rows (LU.Decomposition, Pivot_Row, Col_To_Row (Pivot_Col));
+                     Swap_Rows (LU.Data, Pivot_Row, Col_To_Row (Pivot_Col));
                      LU.Determinant_Multiplier := -LU.Determinant_Multiplier;
                      F_Utility.Swap (Rows_Scaling (Pivot_Row), Rows_Scaling (Col_To_Row (Pivot_Col)));
                      Pivot_Row := Col_To_Row (Pivot_Col);
@@ -91,15 +93,15 @@ package body Cookbook.Linear_Equations.LU_Decomp is
 
                   -- Divide the remainder of the pivot's column by the pivot element and reduce the remaining submatrix
                   declare
-                     Pivot_Element : constant Float_Type := LU.Decomposition (Pivot_Row, Pivot_Col);
+                     Pivot_Element : constant Float_Type := LU.Data (Pivot_Row, Pivot_Col);
                   begin
-                     for Row in LU_Row'Succ (Pivot_Row) .. LU.Last_Row loop
-                        LU.Decomposition (Row, Pivot_Col) := LU.Decomposition (Row, Pivot_Col) / Pivot_Element;
+                     for Row in Pivot_Row + Index_Type'(1) .. LU.Last_Row loop
+                        LU.Data (Row, Pivot_Col) := LU.Data (Row, Pivot_Col) / Pivot_Element;
                         declare
-                           Pivot_Col_Value : constant Float_Type := LU.Decomposition (Row, Pivot_Col);
+                           Pivot_Col_Value : constant Float_Type := LU.Data (Row, Pivot_Col);
                         begin
-                           for Col in LU_Col'Succ (Pivot_Col) .. LU.Last_Col loop
-                              LU.Decomposition (Row, Col) := LU.Decomposition (Row, Col) - Pivot_Col_Value * LU.Decomposition (Pivot_Row, Col);
+                           for Col in Pivot_Col + Index_Type'(1) .. LU.Last_Col loop
+                              LU.Data (Row, Col) := LU.Data (Row, Col) - Pivot_Col_Value * LU.Data (Pivot_Row, Col);
                            end loop;
                         end;
                      end loop;
@@ -114,13 +116,13 @@ package body Cookbook.Linear_Equations.LU_Decomp is
    function Is_Lower_Triangular (Matrix : F_Containers.Matrix) return Boolean is
      (for all Row in Matrix'Range (1) =>
           (for all Col in Matrix'Range (2) =>
-             (if Row < Col then Matrix (Row, Col) = 0.0)));
+             (if Size_Type'(Row - Matrix'First (1)) < Size_Type'(Col - Matrix'First (2)) then Matrix (Row, Col) = 0.0)));
 
 
    function Is_Upper_Triangular (Matrix : F_Containers.Matrix) return Boolean is
      (for all Row in Matrix'Range (1) =>
           (for all Col in Matrix'Range (2) =>
-             (if Row > Col then Matrix (Row, Col) = 0.0)));
+             (if Size_Type'(Row - Matrix'First (1)) > Size_Type'(Col - Matrix'First (2)) then Matrix (Row, Col) = 0.0)));
 
 
    function Lower (LU : LU_Decomposition) return F_Containers.Matrix is
@@ -129,11 +131,11 @@ package body Cookbook.Linear_Equations.LU_Decomp is
          for Row in Result'Range (1) loop
             for Col in Result'Range (2) loop
                declare
-                  Col_Offset : constant Size_Type := Col - Result'First (1);
-                  Row_Offset : constant Size_Type := Row - Result'First (2);
+                  Row_Offset : constant Size_Type := Row - Result'First (1);
+                  Col_Offset : constant Size_Type := Col - Result'First (2);
                begin
                   if Col_Offset < Row_Offset then
-                     Result (Row, Col) := LU.Decomposition (Row, Col);
+                     Result (Row, Col) := LU.Data (Row, Col);
                   elsif Col_Offset = Row_Offset then
                      Result (Row, Col) := 1.0;
                   else
@@ -152,11 +154,11 @@ package body Cookbook.Linear_Equations.LU_Decomp is
          for Row in Result'Range (1) loop
             for Col in Result'Range (2) loop
                declare
-                  Col_Offset : constant Size_Type := Col - Result'First (1);
-                  Row_Offset : constant Size_Type := Row - Result'First (2);
+                  Row_Offset : constant Size_Type := Row - Result'First (1);
+                  Col_Offset : constant Size_Type := Col - Result'First (2);
                begin
                   if Col_Offset >= Row_Offset then
-                     Result (Row, Col) := LU.Decomposition (Row, Col);
+                     Result (Row, Col) := LU.Data (Row, Col);
                   else
                      Result (Row, Col) := 0.0;
                   end if;
@@ -178,9 +180,78 @@ package body Cookbook.Linear_Equations.LU_Decomp is
       end return;
    end Unscramble;
 
--- begin
+
+   procedure Test is
+      package Test_Runner is new Cookbook.Test;
+      use Test_Runner;
+
+      procedure Test_Crout_LU is
+      begin
+         -- Try inverting a 1x1 singular matrix, expect an exception
+         declare
+            Singular : constant F_Containers.Matrix := 0.0 * F_Containers.Identity_Matrix (1);
+         begin
+            declare
+               LU : constant LU_Decomposition := Crout_LU_Decomposition (Singular);
+            begin
+               Test_Element_Property (False, "should throw an exception when encountering a singular matrix");
+            end;
+         exception
+            when Singular_Matrix => Test_Element_Property (True, "should throw an exception upon encountering a singular matrix");
+         end;
+
+         -- Try decomposing a basic 1x1 matrix
+         declare
+            Mat_1x1 : constant F_Containers.Matrix (3 .. 3, 5 .. 5) := 0.1 * F_Containers.Identity_Matrix (1);
+            LU : constant LU_Decomposition := Crout_LU_Decomposition (Mat_1x1);
+         begin
+            Test_Element_Property (LU.Data (LU.Data'First (1), LU.Data'First (2)) = 0.1, "should work with a 1x1 matrix");
+         end;
+
+         -- Try it with a diagonal 2x2 matrix
+         declare
+            Mat_2x2 : F_Containers.Matrix (24 .. 25, 15 .. 16) := 0.5 * F_Containers.Identity_Matrix (2);
+         begin
+            Mat_2x2 (Mat_2x2'Last (1), Mat_2x2'Last (2)) := 4.0;
+            declare
+               LU : constant LU_Decomposition := Crout_LU_Decomposition (Mat_2x2);
+            begin
+               Test_Element_Property (LU.Data (LU.Data'First (1), LU.Data'First (2)) = 0.5, "should work with a diagonal 2x2 matrix");
+               Test_Element_Property (LU.Data (LU.Data'First (1), LU.Data'Last (2)) = 0.0, "should work with a diagonal 2x2 matrix");
+               Test_Element_Property (LU.Data (LU.Data'Last (1), LU.Data'First (2)) = 0.0, "should work with a diagonal 2x2 matrix");
+               Test_Element_Property (LU.Data (LU.Data'Last (1), LU.Data'Last (2)) = 4.0, "should work with a diagonal 2x2 matrix");
+            end;
+         end;
+
+         -- Try it with an inversed-diagonal 2x2 matrix
+         declare
+            Mat_2x2 : F_Containers.Matrix (55 .. 56, 44 .. 45) := 0.0 * F_Containers.Identity_Matrix (2);
+         begin
+            Mat_2x2 (Mat_2x2'First (1), Mat_2x2'Last (2)) := 4.0;
+            Mat_2x2 (Mat_2x2'Last (1), Mat_2x2'First (2)) := 0.5;
+            declare
+               LU : constant LU_Decomposition := Crout_LU_Decomposition (Mat_2x2);
+            begin
+               Test_Element_Property (LU.Data (LU.Data'First (1), LU.Data'First (2)) = 0.5, "should work with a non-diagonal 2x2 matrix");
+               Test_Element_Property (LU.Data (LU.Data'First (1), LU.Data'Last (2)) = 0.0, "should work with a non-diagonal 2x2 matrix");
+               Test_Element_Property (LU.Data (LU.Data'Last (1), LU.Data'First (2)) = 0.0, "should work with a non-diagonal 2x2 matrix");
+               Test_Element_Property (LU.Data (LU.Data'Last (1), LU.Data'Last (2)) = 4.0, "should work with a non-diagonal 2x2 matrix");
+            end;
+         end;
+      end Test_Crout_LU;
+
+      procedure Test_Linear_Equations_Package is
+      begin
+         Test_Package_Element (To_Entity_Name ("Crout_LU_Decomposition"), Test_Crout_LU'Access);
+         -- TODO : Test other LU-related methods
+      end Test_Linear_Equations_Package;
+   begin
+      Test_Package (To_Entity_Name ("Linear_Equations.LU_Decomp"), Test_Linear_Equations_Package'Access);
+   end Test;
+
+begin
 
    -- Automatically test the package when it is included
-   -- Test;
+   Test;
 
 end Cookbook.Linear_Equations.LU_Decomp;

@@ -17,8 +17,8 @@ package Cookbook.Linear_Equations.LU_Decomp is
    -- TODO : Add RHS solver, inverse computation, determinant, and all that jazz, with appropriate pre/postconditions
 
 
-   -- TODO : Once everything has stabilized, test LU decomposition too
-   -- procedure Test;
+   -- Test the functions within this package
+   procedure Test;
 
 private
 
@@ -30,7 +30,7 @@ private
    type Index_Array is array (Index_Type range <>) of Index_Type;
    type LU_Decomposition (First_Row, Last_Row, First_Col, Last_Col : Index_Type) is
       record
-         Decomposition : F_Containers.Matrix (First_Row .. Last_Row, First_Col .. Last_Col);
+         Data : F_Containers.Matrix (First_Row .. Last_Row, First_Col .. Last_Col);
          Determinant_Multiplier : Float_Type;
          Initial_Row_Positions : Index_Array (First_Row .. Last_Row);
          -- TODO : Add components to store permutations, etc.
