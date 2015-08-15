@@ -39,6 +39,7 @@ package Cookbook.Generic_Containers is
    -- The identity matrix is often useful, so we'll provide a cheap function to generate it
    function Identity_Matrix (Size : Size_Type) return Matrix
      with
-       Post => (Identity_Matrix'Result'Length (1) = Identity_Matrix'Result'Length (2) and then Identity_Matrix'Result'Length (1) = Size);
+       Post => (Identity_Matrix'Result'Length (1) = Identity_Matrix'Result'Length (2) and then
+                      Identity_Matrix'Result'Length (1) = Size);
 
 end Cookbook.Generic_Containers;

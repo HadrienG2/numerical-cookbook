@@ -9,6 +9,10 @@ package Cookbook.Linear_Equations is
 
    Singular_Matrix : exception;
 
+   -- In this package, we'll be using square matrices a lot, so let's define what we mean by that
+   function Is_Square_Matrix (Matrix : F_Containers.Matrix) return Boolean is
+      (Matrix'Length (1) = Matrix'Length (2));
+
    -- Swapping rows and columns is very useful for pivoting algorithms
    procedure Swap_Rows (Mat : in out F_Containers.Matrix; Row_1, Row_2 : Index_Type)
      with

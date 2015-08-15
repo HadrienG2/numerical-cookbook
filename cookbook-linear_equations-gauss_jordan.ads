@@ -9,13 +9,12 @@ package Cookbook.Linear_Equations.Gauss_Jordan is
    -- Even if the preconditions are satisfied, the function may still throw Singular_Matrix if the input is singular.
    procedure Gauss_Jordan_Elimination (Matrix : in out F_Containers.Matrix; Right_Hand_Vectors : in out F_Containers.Matrix)
      with
-       Pre => (Matrix'Length (1) = Matrix'Length (2) and then
-                     Matrix'Length (1) = Right_Hand_Vectors'Length (1)),
+       Pre => (Is_Square_Matrix (Matrix) and then Matrix'Length (1) = Right_Hand_Vectors'Length (1)),
        Post => (Matrix * Matrix'Old = F_Containers.Identity_Matrix (Matrix'Length (1)) and then
                   Right_Hand_Vectors = Matrix * Right_Hand_Vectors'Old);
    procedure Gauss_Jordan_Elimination (Matrix : in out F_Containers.Matrix)
      with
-       Pre => (Matrix'Length (1) = Matrix'Length (2)),
+       Pre => (Is_Square_Matrix (Matrix)),
        Post => (Matrix * Matrix'Old = F_Containers.Identity_Matrix (Matrix'Length (1)));
 
    -- Test the functions within this package
