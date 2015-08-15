@@ -1,51 +1,9 @@
 package body Cookbook.Linear_Equations.LU_Decomp is
 
-   function Lower (LU : LU_Decomposition) return F_Containers.Matrix is
-   begin
-      return Result : F_Containers.Matrix (LU.First_Row .. LU.Last_Row, LU.First_Col .. LU.Last_Col) do
-         for Row in Result'Range (1) loop
-            for Col in Result'Range (2) loop
-               declare
-                  Col_Offset : constant Size_Type := Col - Result'First (1);
-                  Row_Offset : constant Size_Type := Row - Result'First (2);
-               begin
-                  if Col_Offset < Row_Offset then
-                     Result (Row, Col) := LU.Decomposition (Row, Col);
-                  elsif Col_Offset = Row_Offset then
-                     Result (Row, Col) := 1.0;
-                  else
-                     Result (Row, Col) := 0.0;
-                  end if;
-               end;
-            end loop;
-         end loop;
-      end return;
-   end Lower;
-
-
-   function Upper (LU : LU_Decomposition) return F_Containers.Matrix is
-   begin
-      return Result : F_Containers.Matrix (LU.First_Row .. LU.Last_Row, LU.First_Col .. LU.Last_Col) do
-         for Row in Result'Range (1) loop
-            for Col in Result'Range (2) loop
-               declare
-                  Col_Offset : constant Size_Type := Col - Result'First (1);
-                  Row_Offset : constant Size_Type := Row - Result'First (2);
-               begin
-                  if Col_Offset >= Row_Offset then
-                     Result (Row, Col) := LU.Decomposition (Row, Col);
-                  else
-                     Result (Row, Col) := 0.0;
-                  end if;
-               end;
-            end loop;
-         end loop;
-      end return;
-   end Upper;
-
-
-   -- This is the simplest implementation that will validate the type's contract, but it is not as good as actually storing the original matrix
-   function Original_Matrix (LU : LU_Decomposition) return F_Containers.Matrix is (Lower (LU) * Upper (LU));
+   function Is_LU_Decomposition_Of (LU : LU_Decomposition; Original_Matrix : F_Containers.Matrix) return Boolean is
+     (LU.First_Row = Original_Matrix'First (1) and then LU.Last_Row = Original_Matrix'Last (1) and then
+      LU.First_Col = Original_Matrix'First (2) and then LU.Last_Col = Original_Matrix'Last (2) and then
+      Unscramble (LU, Lower (LU) * Upper (LU)) = Original_Matrix);
 
 
    function Crout_LU_Decomposition (Matrix : F_Containers.Matrix) return LU_Decomposition is
@@ -151,6 +109,74 @@ package body Cookbook.Linear_Equations.LU_Decomp is
          end;
       end return;
    end Crout_LU_Decomposition;
+
+
+   function Is_Lower_Triangular (Matrix : F_Containers.Matrix) return Boolean is
+     (for all Row in Matrix'Range (1) =>
+          (for all Col in Matrix'Range (2) =>
+             (if Row < Col then Matrix (Row, Col) = 0.0)));
+
+
+   function Is_Upper_Triangular (Matrix : F_Containers.Matrix) return Boolean is
+     (for all Row in Matrix'Range (1) =>
+          (for all Col in Matrix'Range (2) =>
+             (if Row > Col then Matrix (Row, Col) = 0.0)));
+
+
+   function Lower (LU : LU_Decomposition) return F_Containers.Matrix is
+   begin
+      return Result : F_Containers.Matrix (LU.First_Row .. LU.Last_Row, LU.First_Col .. LU.Last_Col) do
+         for Row in Result'Range (1) loop
+            for Col in Result'Range (2) loop
+               declare
+                  Col_Offset : constant Size_Type := Col - Result'First (1);
+                  Row_Offset : constant Size_Type := Row - Result'First (2);
+               begin
+                  if Col_Offset < Row_Offset then
+                     Result (Row, Col) := LU.Decomposition (Row, Col);
+                  elsif Col_Offset = Row_Offset then
+                     Result (Row, Col) := 1.0;
+                  else
+                     Result (Row, Col) := 0.0;
+                  end if;
+               end;
+            end loop;
+         end loop;
+      end return;
+   end Lower;
+
+
+   function Upper (LU : LU_Decomposition) return F_Containers.Matrix is
+   begin
+      return Result : F_Containers.Matrix (LU.First_Row .. LU.Last_Row, LU.First_Col .. LU.Last_Col) do
+         for Row in Result'Range (1) loop
+            for Col in Result'Range (2) loop
+               declare
+                  Col_Offset : constant Size_Type := Col - Result'First (1);
+                  Row_Offset : constant Size_Type := Row - Result'First (2);
+               begin
+                  if Col_Offset >= Row_Offset then
+                     Result (Row, Col) := LU.Decomposition (Row, Col);
+                  else
+                     Result (Row, Col) := 0.0;
+                  end if;
+               end;
+            end loop;
+         end loop;
+      end return;
+   end Upper;
+
+
+   function Unscramble (LU_Permutation : LU_Decomposition; Scrambled_Matrix : F_Containers.Matrix) return F_Containers.Matrix is
+   begin
+      return Result : F_Containers.Matrix := Scrambled_Matrix do
+         for Row in reverse Result'Range (1) loop
+            if Row /= LU_Permutation.Initial_Row_Positions (Row) then
+               Swap_Rows (Result, Row, LU_Permutation.Initial_Row_Positions (Row));
+            end if;
+         end loop;
+      end return;
+   end Unscramble;
 
 -- begin
 
