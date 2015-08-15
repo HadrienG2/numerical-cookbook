@@ -23,7 +23,7 @@ project NumericalCookbook is
    end Compiler;
 
    package Binder is
-      for Default_Switches ("ada") use ("-E", "-r");
+      for Default_Switches ("ada") use ("-E");
    end Binder;
 
 end NumericalCookbook;
