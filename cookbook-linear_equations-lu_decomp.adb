@@ -192,7 +192,7 @@ package body Cookbook.Linear_Equations.LU_Decomp is
             Singular : constant F_Containers.Matrix := 0.0 * F_Containers.Identity_Matrix (1);
          begin
             declare
-               LU : constant LU_Decomposition := Crout_LU_Decomposition (Singular);
+               LU : constant LU_Decomposition := Crout_LU_Decomposition (Singular) with Unreferenced;
             begin
                Test_Element_Property (False, "should throw an exception when encountering a singular matrix");
             end;
@@ -200,7 +200,7 @@ package body Cookbook.Linear_Equations.LU_Decomp is
             when Singular_Matrix => Test_Element_Property (True, "should throw an exception upon encountering a singular matrix");
          end;
 
-         -- Try decomposing a basic 1x1 matrix
+         -- Try a normal 1x1 matrix
          declare
             Mat_1x1 : constant F_Containers.Matrix (3 .. 3, 5 .. 5) := 0.1 * F_Containers.Identity_Matrix (1);
             LU : constant LU_Decomposition := Crout_LU_Decomposition (Mat_1x1);
@@ -208,36 +208,54 @@ package body Cookbook.Linear_Equations.LU_Decomp is
             Test_Element_Property (LU.Data (LU.Data'First (1), LU.Data'First (2)) = 0.1, "should work with a 1x1 matrix");
          end;
 
-         -- Try it with a diagonal 2x2 matrix
+         -- Test that 2x2 singular matrices also raise exceptions
          declare
-            Mat_2x2 : F_Containers.Matrix (24 .. 25, 15 .. 16) := 0.5 * F_Containers.Identity_Matrix (2);
+            Singular2 : constant F_Containers.Matrix (15 .. 16, 8 .. 9) := ((1.0, 1.0), (1.0, 1.0));
          begin
-            Mat_2x2 (Mat_2x2'Last (1), Mat_2x2'Last (2)) := 4.0;
             declare
-               LU : constant LU_Decomposition := Crout_LU_Decomposition (Mat_2x2);
+               LU : constant LU_Decomposition := Crout_LU_Decomposition (Singular2);
             begin
-               Test_Element_Property (LU.Data (LU.Data'First (1), LU.Data'First (2)) = 0.5, "should work with a diagonal 2x2 matrix");
-               Test_Element_Property (LU.Data (LU.Data'First (1), LU.Data'Last (2)) = 0.0, "should work with a diagonal 2x2 matrix");
-               Test_Element_Property (LU.Data (LU.Data'Last (1), LU.Data'First (2)) = 0.0, "should work with a diagonal 2x2 matrix");
-               Test_Element_Property (LU.Data (LU.Data'Last (1), LU.Data'Last (2)) = 4.0, "should work with a diagonal 2x2 matrix");
+               pragma Unreferenced (LU);  -- DEBUG : For some reason, an aspect would make GNAT 2015 unhappy even if it's fine for a 1x1 matrix
+               Test_Element_Property (False, "should throw an exception when encountering a singular matrix");
             end;
+         exception
+            when Singular_Matrix => Test_Element_Property (True, "should throw an exception upon encountering a singular matrix");
          end;
 
-         -- Try it with an inversed-diagonal 2x2 matrix
+         -- Try it with a lower triangular 2x2 matrix
          declare
-            Mat_2x2 : F_Containers.Matrix (55 .. 56, 44 .. 45) := 0.0 * F_Containers.Identity_Matrix (2);
+            Mat_2x2 : constant F_Containers.Matrix (24 .. 25, 15 .. 16) := ((100.0, 0.0), (13.13, 4.0));
+            LU : constant LU_Decomposition := Crout_LU_Decomposition (Mat_2x2);
          begin
-            Mat_2x2 (Mat_2x2'First (1), Mat_2x2'Last (2)) := 4.0;
-            Mat_2x2 (Mat_2x2'Last (1), Mat_2x2'First (2)) := 0.5;
-            declare
-               LU : constant LU_Decomposition := Crout_LU_Decomposition (Mat_2x2);
-            begin
-               Test_Element_Property (LU.Data (LU.Data'First (1), LU.Data'First (2)) = 0.5, "should work with a non-diagonal 2x2 matrix");
-               Test_Element_Property (LU.Data (LU.Data'First (1), LU.Data'Last (2)) = 0.0, "should work with a non-diagonal 2x2 matrix");
-               Test_Element_Property (LU.Data (LU.Data'Last (1), LU.Data'First (2)) = 0.0, "should work with a non-diagonal 2x2 matrix");
-               Test_Element_Property (LU.Data (LU.Data'Last (1), LU.Data'Last (2)) = 4.0, "should work with a non-diagonal 2x2 matrix");
-            end;
+            Test_Element_Property (LU.Data (LU.Data'First (1), LU.Data'First (2)) = 100.0, "should work with a lower-triangular 2x2 matrix");
+            Test_Element_Property (LU.Data (LU.Data'First (1), LU.Data'Last (2)) = 0.0, "should work with a lower-triangular 2x2 matrix");
+            Test_Element_Property (LU.Data (LU.Data'Last (1), LU.Data'First (2)) = 0.1313, "should work with a lower-triangular 2x2 matrix");
+            Test_Element_Property (LU.Data (LU.Data'Last (1), LU.Data'Last (2)) = 4.0, "should work with a lower-triangular 2x2 matrix");
          end;
+
+         -- Try it with an upper-triangular 2x2 matrix
+         declare
+            Mat_2x2 : constant F_Containers.Matrix (55 .. 56, 44 .. 45) := ((50.0, 18.0), (0.0, 0.5));
+            LU : constant LU_Decomposition := Crout_LU_Decomposition (Mat_2x2);
+         begin
+            Test_Element_Property (LU.Data (LU.Data'First (1), LU.Data'First (2)) = 50.0, "should work with an upper-triangular 2x2 matrix");
+            Test_Element_Property (LU.Data (LU.Data'First (1), LU.Data'Last (2)) = 18.0, "should work with an upper-triangular 2x2 matrix");
+            Test_Element_Property (LU.Data (LU.Data'Last (1), LU.Data'First (2)) = 0.0, "should work with an upper-triangular 2x2 matrix");
+            Test_Element_Property (LU.Data (LU.Data'Last (1), LU.Data'Last (2)) = 0.5, "should work with an upper-triangular 2x2 matrix");
+         end;
+
+         -- Try it with a reverse-diagonal matrix
+         declare
+            Mat_2x2 : constant F_Containers.Matrix (50 .. 51, 3 .. 4) := ((0.0, 4.0), (0.5, 0.0));
+            LU : constant LU_Decomposition := Crout_LU_Decomposition (Mat_2x2);
+         begin
+            Test_Element_Property (LU.Data (LU.Data'First (1), LU.Data'First (2)) = 0.5, "should work with a reverse-diagonal 2x2 matrix");
+            Test_Element_Property (LU.Data (LU.Data'First (1), LU.Data'Last (2)) = 0.0, "should work with a reverse-diagonal 2x2 matrix");
+            Test_Element_Property (LU.Data (LU.Data'Last (1), LU.Data'First (2)) = 0.0, "should work with a reverse-diagonal 2x2 matrix");
+            Test_Element_Property (LU.Data (LU.Data'Last (1), LU.Data'Last (2)) = 4.0, "should work with a reverse-diagonal 2x2 matrix");
+         end;
+
+         -- TODO : Also try with a 3x3 matrix in order to achieve full coverage
       end Test_Crout_LU;
 
       procedure Test_Linear_Equations_Package is
