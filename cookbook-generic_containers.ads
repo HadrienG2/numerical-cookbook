@@ -4,12 +4,18 @@ generic
    One : Item_Type;
    with function "+" (Left, Right : Item_Type) return Item_Type is <>;
    with function "*" (Left, Right : Item_Type) return Item_Type is <>;
+   with function "=" (Left, Right : Item_Type) return Boolean is <>;
 package Cookbook.Generic_Containers is
 
    -- This can be changed to actual vector/matrix classes if the need arises. But that would be inconvenient in Ada as
    -- it is hard to implement custom indexing operators in this language.
    type Vector is array (Index_Type range <>) of Item_Type;
    type Matrix is array (Index_Type range <>, Index_Type range <>) of Item_Type;
+
+   -- Comparison uses the custom equality operator
+   overriding function "=" (Left, Right : Matrix) return Boolean
+     with
+       Pre => (Left'Length (1) = Right'Length (1) and then Left'Length (2) = Right'Length (2));
 
    -- Multiplication by a scalar is business as usual
    function "*" (Left : Item_Type; Right : Matrix) return Matrix

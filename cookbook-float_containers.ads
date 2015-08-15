@@ -3,7 +3,10 @@ with Cookbook.Generic_Containers;
 generic
 package Cookbook.Float_Containers is
 
-   package Implementation is new Cookbook.Generic_Containers (Item_Type => Float_Type, Zero => 0.0, One => 1.0);
+   package Implementation is new Cookbook.Generic_Containers (Item_Type => Float_Type,
+                                                              Zero => 0.0,
+                                                              One => 1.0,
+                                                              "=" => Cookbook."=");
 
    subtype Vector is Implementation.Vector;
    subtype Matrix is Implementation.Matrix;
