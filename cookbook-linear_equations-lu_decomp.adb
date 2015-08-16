@@ -244,7 +244,7 @@ package body Cookbook.Linear_Equations.LU_Decomp is
             Test_Element_Property (LU.Data (LU.Data'Last (1), LU.Data'Last (2)) = 0.5, "should work with an upper-triangular 2x2 matrix");
          end;
 
-         -- Try it with a reverse-diagonal matrix
+         -- Try it with a reverse-diagonal matrix, check that it pivots properly
          declare
             Mat_2x2 : constant F_Containers.Matrix (50 .. 51, 3 .. 4) := ((0.0, 4.0), (0.5, 0.0));
             LU : constant LU_Decomposition := Crout_LU_Decomposition (Mat_2x2);
@@ -255,7 +255,21 @@ package body Cookbook.Linear_Equations.LU_Decomp is
             Test_Element_Property (LU.Data (LU.Data'Last (1), LU.Data'Last (2)) = 4.0, "should work with a reverse-diagonal 2x2 matrix");
          end;
 
-         -- TODO : Also try with a 3x3 matrix in order to achieve full coverage
+         -- Also try with a 3x3 matrix in order to achieve full coverage
+         declare
+            Mat_3x3 : constant F_Containers.Matrix (11 .. 13, 31 .. 33) := ((10.0, 100.0, 0.0), (20.0, 0.0, 0.0), (14.0, 50.0, 15.0));
+            LU : constant LU_Decomposition := Crout_LU_Decomposition (Mat_3x3);
+         begin
+            Test_Element_Property (LU.Data (11, 31) = 20.0, "should work with a 3x3 matrix");
+            Test_Element_Property (LU.Data (11, 32) = 0.0, "should work with a 3x3 matrix");
+            Test_Element_Property (LU.Data (11, 33) = 0.0, "should work with a 3x3 matrix");
+            Test_Element_Property (LU.Data (12, 31) = 0.5, "should work with a 3x3 matrix");
+            Test_Element_Property (LU.Data (12, 32) = 100.0, "should work with a 3x3 matrix");
+            Test_Element_Property (LU.Data (12, 33) = 0.0, "should work with a 3x3 matrix");
+            Test_Element_Property (LU.Data (13, 31) = 0.7, "should work with a 3x3 matrix");
+            Test_Element_Property (LU.Data (13, 32) = 0.5, "should work with a 3x3 matrix");
+            Test_Element_Property (LU.Data (13, 33) = 15.0, "should work with a 3x3 matrix");
+         end;
       end Test_Crout_LU;
 
       procedure Test_Linear_Equations_Package is
