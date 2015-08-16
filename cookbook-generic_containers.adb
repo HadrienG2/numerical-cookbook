@@ -86,8 +86,8 @@ package body Cookbook.Generic_Containers is
 
    function Identity_Matrix (Size : Size_Type) return Matrix is
    begin
-      return Result : Matrix (Index_Type'First .. Index_Type'First + Size - 1,
-                              Index_Type'First .. Index_Type'First + Size - 1) := (others => (others => Zero)) do
+      return Result : Matrix (Index_Type'First .. Index_Type'First + Size - Size_Type'(1),
+                              Index_Type'First .. Index_Type'First + Size - Size_Type'(1)) := (others => (others => Zero)) do
          for I in Result'Range (1) loop
             Result (I, I) := One;
          end loop;
