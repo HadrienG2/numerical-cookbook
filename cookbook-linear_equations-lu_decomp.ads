@@ -6,7 +6,6 @@ package Cookbook.Linear_Equations.LU_Decomp is
    function Matrix_Size (LU : LU_Decomposition) return Size_Type;
    function Is_LU_Decomposition_Of (LU : LU_Decomposition; Original_Matrix : F_Containers.Matrix) return Boolean;
 
-
    -- LU decomposition may be computed using Crout's algorithm, and opens many possibilities for efficient computations on the original matrix.
    -- As before, the algorithm may throw Singular_Matrix even if all preconditions are satisfied if the input is singular.
    function Crout_LU_Decomposition (Matrix : F_Containers.Matrix) return LU_Decomposition
@@ -14,6 +13,14 @@ package Cookbook.Linear_Equations.LU_Decomp is
        Pre => (Is_Square_Matrix (Matrix)),
        Post => (Matrix_Size (Crout_LU_Decomposition'Result) = Matrix'Length (1) and then
                       Is_LU_Decomposition_Of (Crout_LU_Decomposition'Result, Matrix));
+   function Compute_Original_Matrix (LU : LU_Decomposition) return F_Containers.Matrix
+     with
+       Post => (Is_Square_Matrix (Compute_Original_Matrix'Result) and then Compute_Original_Matrix'Result'Length (1) = Matrix_Size (LU));
+   function Solve (LU : LU_Decomposition; Right_Hand_Vector : F_Containers.Vector) return F_Containers.Vector
+     with
+       Pre => (Right_Hand_Vector'Length = Matrix_Size (LU)),
+       Post => (Solve'Result'Length = Right_Hand_Vector'Length and then
+                  Compute_Original_Matrix (LU) * Solve'Result = Right_Hand_Vector);
    -- TODO : Add RHS solver, inverse computation, determinant, and all that jazz, with appropriate pre/postconditions
 
 
@@ -38,7 +45,6 @@ private
    function Matrix_Size (LU : LU_Decomposition) return Size_Type is
      (LU.Last_Row - LU.First_Row + 1);
 
-
    -- First, let's define what we mean by lower-triangular and upper-triangular matrices
    function Is_Lower_Triangular (Matrix : F_Containers.Matrix) return Boolean
      with
@@ -46,7 +52,6 @@ private
    function Is_Upper_Triangular (Matrix : F_Containers.Matrix) return Boolean
      with
        Pre => (Is_Square_Matrix (Matrix));
-
 
    -- To improve the stability of the algorithm, we do not LU-decompose the original matrix, but a row-wise permutation of it.
    -- This is why we make these useful functions private : they require some care to be used.

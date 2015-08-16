@@ -5,7 +5,7 @@ package body Cookbook.Linear_Equations.LU_Decomp is
    function Is_LU_Decomposition_Of (LU : LU_Decomposition; Original_Matrix : F_Containers.Matrix) return Boolean is
      (LU.First_Row = Original_Matrix'First (1) and then LU.Last_Row = Original_Matrix'Last (1) and then
       LU.First_Col = Original_Matrix'First (2) and then LU.Last_Col = Original_Matrix'Last (2) and then
-      Unscramble (LU, Lower (LU) * Upper (LU)) = Original_Matrix);
+      Compute_Original_Matrix (LU) = Original_Matrix);
 
 
    function Crout_LU_Decomposition (Matrix : F_Containers.Matrix) return LU_Decomposition is
@@ -95,12 +95,12 @@ package body Cookbook.Linear_Equations.LU_Decomp is
                   declare
                      Pivot_Element : constant Float_Type := LU.Data (Pivot_Row, Pivot_Col);
                   begin
-                     for Row in Pivot_Row + Index_Type'(1) .. LU.Last_Row loop
+                     for Row in Pivot_Row + Size_Type'(1) .. LU.Last_Row loop
                         LU.Data (Row, Pivot_Col) := LU.Data (Row, Pivot_Col) / Pivot_Element;
                         declare
                            Pivot_Col_Value : constant Float_Type := LU.Data (Row, Pivot_Col);
                         begin
-                           for Col in Pivot_Col + Index_Type'(1) .. LU.Last_Col loop
+                           for Col in Pivot_Col + Size_Type'(1) .. LU.Last_Col loop
                               LU.Data (Row, Col) := LU.Data (Row, Col) - Pivot_Col_Value * LU.Data (Pivot_Row, Col);
                            end loop;
                         end;
@@ -112,6 +112,55 @@ package body Cookbook.Linear_Equations.LU_Decomp is
       end return;
    end Crout_LU_Decomposition;
 
+
+   function Compute_Original_Matrix (LU : LU_Decomposition) return F_Containers.Matrix is
+     (Unscramble (LU, Lower (LU) * Upper (LU)));
+
+
+   function Solve (LU : LU_Decomposition; Right_Hand_Vector : F_Containers.Vector) return F_Containers.Vector is
+      subtype LU_Row is Index_Type range LU.First_Row .. LU.Last_Row;
+      subtype LU_Col is Index_Type range LU.First_Col .. LU.Last_Col;
+      subtype RHS_Row is Index_Type range Right_Hand_Vector'First .. Right_Hand_Vector'Last;
+      function LU_Row_To_LU_Col (Row : LU_Row) return LU_Col is (Row - LU_Row'First + LU_Col'First);
+      function LU_Row_To_RHS (Row : LU_Row) return RHS_Row is (Row - LU_Row'First + RHS_Row'First);
+      function LU_Col_To_RHS (Col : LU_Col) return RHS_Row is (Col - LU_Col'First + RHS_Row'First);
+
+      -- TODO : Change this to human-readable names
+      Ii : LU_Col := LU_Col'First;
+      Nonzero_Element_Encountered : Boolean := False;
+   begin
+      return Result : F_Containers.Vector := Right_Hand_Vector do
+         for Row in LU_Row loop
+            declare
+               -- TODO : Change this to human-readable names
+               Initial_RHS_Row_Pos : constant RHS_Row := LU_Row_To_RHS (LU.Initial_Row_Positions (Row));
+               Sum : Float_Type := Result (Initial_RHS_Row_Pos);
+            begin
+               Result (Initial_RHS_Row_Pos) := Result (LU_Row_To_RHS (Row));
+               if Nonzero_Element_Encountered then
+                  for Col in Ii .. LU_Row_To_LU_Col (Row) - Size_Type'(1) loop
+                     Sum := Sum - LU.Data (Row, Col) * Result (LU_Col_To_RHS (Col));
+                  end loop;
+               elsif Sum /= 0.0 then
+                  Nonzero_Element_Encountered := True;
+                  Ii := LU_Row_To_LU_Col (Row);
+               end if;
+               Result (LU_Row_To_RHS (Row)) := Sum;
+            end;
+         end loop;
+         for Row in reverse LU_Row loop
+            declare
+               -- TODO : Change this to human-readable names
+               Sum : Float_Type := Result (LU_Row_To_RHS (Row));
+            begin
+               for Col in LU_Row_To_LU_Col (Row) + Size_Type'(1) .. LU_Col'Last loop
+                  Sum := Sum - LU.Data (Row, Col) * Result (LU_Col_To_RHS (Col));
+               end loop;
+               Result (LU_Row_To_RHS (Row)) := Sum / LU.Data (Row, LU_Row_To_LU_Col (Row));
+            end;
+         end loop;
+      end return;
+   end Solve;
 
    function Is_Lower_Triangular (Matrix : F_Containers.Matrix) return Boolean is
      (for all Row in Matrix'Range (1) =>
