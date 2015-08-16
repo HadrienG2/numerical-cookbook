@@ -5,7 +5,7 @@ generic
    with package F_Containers is new Cookbook.Float_Containers;
 package Cookbook.Linear_Equations is
 
-   use type F_Containers.Matrix;
+   use type F_Containers.Matrix, F_Containers.Vector;
 
    Singular_Matrix : exception;
 
