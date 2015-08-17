@@ -189,6 +189,14 @@ package body Cookbook.Linear_Equations.LU_Decomp is
    end Solve;
 
 
+   function Inverse_Matrix (LU : LU_Decomposition) return F_Containers.Matrix is
+   begin
+      return Result : F_Containers.Matrix := F_Containers.Identity_Matrix (Matrix_Size (LU)) do
+         Result := Solve (LU, Result);
+      end return;
+   end Inverse_Matrix;
+
+
    function Is_Lower_Triangular (Matrix : F_Containers.Matrix) return Boolean is
      (for all Row in Matrix'Range (1) =>
           (for all Col in Matrix'Range (2) =>
@@ -366,10 +374,26 @@ package body Cookbook.Linear_Equations.LU_Decomp is
          end;
       end Test_Solve;
 
+      procedure Test_Inverse is
+      begin
+         -- Try to inverse a simple reverse-diagonal matrix
+         declare
+            Mat_2x2 : constant F_Containers.Matrix (50 .. 51, 3 .. 4) := ((0.0, 4.0), (0.5, 0.0));
+            LU : constant LU_Decomposition := Crout_LU_Decomposition (Mat_2x2);
+            Mat_Inv : constant F_Containers.Matrix := Inverse_Matrix (LU);
+         begin
+            Test_Element_Property (Mat_Inv (Mat_Inv'First (1), Mat_Inv'First (2)) = 0.0, "should work with a reverse-diagonal 2x2 matrix");
+            Test_Element_Property (Mat_Inv (Mat_Inv'First (1), Mat_Inv'Last (2)) = 2.0, "should work with a reverse-diagonal 2x2 matrix");
+            Test_Element_Property (Mat_Inv (Mat_Inv'Last (1), Mat_Inv'First (2)) = 0.25, "should work with a reverse-diagonal 2x2 matrix");
+            Test_Element_Property (Mat_Inv (Mat_Inv'Last (1), Mat_Inv'Last (2)) = 0.0, "should work with a reverse-diagonal 2x2 matrix");
+         end;
+      end Test_Inverse;
+
       procedure Test_Linear_Equations_Package is
       begin
          Test_Package_Element (To_Entity_Name ("Crout_LU_Decomposition"), Test_Crout_LU'Access);
          Test_Package_Element (To_Entity_Name ("Solve"), Test_Solve'Access);
+         Test_Package_Element (To_Entity_Name ("Inverse_Matrix"), Test_Inverse'Access);
          -- TODO : Test other LU-related methods
       end Test_Linear_Equations_Package;
    begin

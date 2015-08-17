@@ -31,6 +31,12 @@ package Cookbook.Linear_Equations.LU_Decomp is
        Post => (Solve'Result'Length (1) = Right_Hand_Vectors'Length (1) and then Solve'Result'Length (2) = Right_Hand_Vectors'Length (2) and then
                       Compute_Original_Matrix (LU) * Solve'Result = Right_Hand_Vectors);
 
+   -- Compute the inverse of a matrix from its LU decomposition
+   function Inverse_Matrix (LU : LU_Decomposition) return F_Containers.Matrix
+     with
+       Post => (Is_Square_Matrix (Inverse_Matrix'Result) and then Inverse_Matrix'Result'Length (1) = Matrix_Size (LU) and then
+                      Inverse_Matrix'Result * Compute_Original_Matrix (LU) = F_Containers.Identity_Matrix (Matrix_Size (LU)));
+
    -- TODO : Add inverse computation, determinant, and all that jazz, with appropriate pre/postconditions
 
 
