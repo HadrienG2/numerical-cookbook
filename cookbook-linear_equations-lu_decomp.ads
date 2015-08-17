@@ -37,8 +37,10 @@ package Cookbook.Linear_Equations.LU_Decomp is
        Post => (Is_Square_Matrix (Inverse_Matrix'Result) and then Inverse_Matrix'Result'Length (1) = Matrix_Size (LU) and then
                       Inverse_Matrix'Result * Compute_Original_Matrix (LU) = F_Containers.Identity_Matrix (Matrix_Size (LU)));
 
-   -- TODO : Add inverse computation, determinant, and all that jazz, with appropriate pre/postconditions
+   -- Compute the determinant of a matrix from its LU decomposition
+   function Determinant (LU : LU_Decomposition) return Float_Type;
 
+   -- TODO : Add remaining stuff, with appropriate pre/postconditions
 
    -- Test the functions within this package
    procedure Test;

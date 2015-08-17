@@ -196,6 +196,18 @@ package body Cookbook.Linear_Equations.LU_Decomp is
       end return;
    end Inverse_Matrix;
 
+   function Determinant (LU : LU_Decomposition) return Float_Type is
+      subtype LU_Row is Index_Type range LU.First_Row .. LU.Last_Row;
+      subtype LU_Col is Index_Type range LU.First_Col .. LU.Last_Col;
+      function Row_To_Col (Row : LU_Row) return LU_Col is (Row - LU_Row'First + LU_Col'First);
+   begin
+      return Result : Float_Type := LU.Determinant_Multiplier do
+         for Row in LU_Row loop
+            Result := Result * LU.Data (Row, Row_To_Col (Row));
+         end loop;
+      end return;
+   end Determinant;
+
 
    function Is_Lower_Triangular (Matrix : F_Containers.Matrix) return Boolean is
      (for all Row in Matrix'Range (1) =>
@@ -389,11 +401,24 @@ package body Cookbook.Linear_Equations.LU_Decomp is
          end;
       end Test_Inverse;
 
+      procedure Test_Determinant is
+      begin
+         -- Try to compute the determinant of our favorite reverse-diagonal matrix
+         declare
+            Mat_2x2 : constant F_Containers.Matrix (50 .. 51, 3 .. 4) := ((0.0, 4.0), (0.5, 0.0));
+            LU : constant LU_Decomposition := Crout_LU_Decomposition (Mat_2x2);
+            Det : constant Float_Type := Determinant (LU);
+         begin
+            Test_Element_Property (Det = -2.0, "should work with a reverse-diagonal 2x2 matrix");
+         end;
+      end Test_Determinant;
+
       procedure Test_Linear_Equations_Package is
       begin
          Test_Package_Element (To_Entity_Name ("Crout_LU_Decomposition"), Test_Crout_LU'Access);
          Test_Package_Element (To_Entity_Name ("Solve"), Test_Solve'Access);
          Test_Package_Element (To_Entity_Name ("Inverse_Matrix"), Test_Inverse'Access);
+         Test_Package_Element (To_Entity_Name ("Determinant"), Test_Determinant'Access);
          -- TODO : Test other LU-related methods
       end Test_Linear_Equations_Package;
    begin
