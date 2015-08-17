@@ -121,36 +121,39 @@ package body Cookbook.Linear_Equations.LU_Decomp is
       subtype LU_Row is Index_Type range LU.First_Row .. LU.Last_Row;
       subtype LU_Col is Index_Type range LU.First_Col .. LU.Last_Col;
       subtype RHS_Row is Index_Type range Right_Hand_Vector'First .. Right_Hand_Vector'Last;
+
       function LU_Row_To_LU_Col (Row : LU_Row) return LU_Col is (Row - LU_Row'First + LU_Col'First);
       function LU_Row_To_RHS (Row : LU_Row) return RHS_Row is (Row - LU_Row'First + RHS_Row'First);
       function LU_Col_To_RHS (Col : LU_Col) return RHS_Row is (Col - LU_Col'First + RHS_Row'First);
-
-      -- TODO : Change this to human-readable names
-      Ii : LU_Col := LU_Col'First;
-      Nonzero_Element_Encountered : Boolean := False;
    begin
       return Result : F_Containers.Vector := Right_Hand_Vector do
-         for Row in LU_Row loop
-            declare
-               -- TODO : Change this to human-readable names
-               Initial_RHS_Row_Pos : constant RHS_Row := LU_Row_To_RHS (LU.Initial_Row_Positions (Row));
-               Sum : Float_Type := Result (Initial_RHS_Row_Pos);
-            begin
-               Result (Initial_RHS_Row_Pos) := Result (LU_Row_To_RHS (Row));
-               if Nonzero_Element_Encountered then
-                  for Col in Ii .. LU_Row_To_LU_Col (Row) - Size_Type'(1) loop
-                     Sum := Sum - LU.Data (Row, Col) * Result (LU_Col_To_RHS (Col));
-                  end loop;
-               elsif Sum /= 0.0 then
-                  Nonzero_Element_Encountered := True;
-                  Ii := LU_Row_To_LU_Col (Row);
-               end if;
-               Result (LU_Row_To_RHS (Row)) := Sum;
-            end;
-         end loop;
+         -- Do the forward substitution, using the lower-triangular part of LU. Do not forget to unscramble the solution in the way
+         declare
+            Nonzero_Element_Encountered : Boolean := False;
+            First_Nonzero_Col : LU_Col := LU_Col'First; -- DEBUG : This assignment is unnecessary, but used to suppress an undue GNAT 2015 warning
+         begin
+            for Row in LU_Row loop
+               declare
+                  Initial_RHS_Row_Pos : constant RHS_Row := LU_Row_To_RHS (LU.Initial_Row_Positions (Row));
+                  Sum : Float_Type := Result (Initial_RHS_Row_Pos);
+               begin
+                  Result (Initial_RHS_Row_Pos) := Result (LU_Row_To_RHS (Row));
+                  if Nonzero_Element_Encountered then
+                     for Col in First_Nonzero_Col .. LU_Row_To_LU_Col (Row) - Size_Type'(1) loop
+                        Sum := Sum - LU.Data (Row, Col) * Result (LU_Col_To_RHS (Col));
+                     end loop;
+                  elsif Sum /= 0.0 then
+                     Nonzero_Element_Encountered := True;
+                     First_Nonzero_Col := LU_Row_To_LU_Col (Row);
+                  end if;
+                  Result (LU_Row_To_RHS (Row)) := Sum;
+               end;
+            end loop;
+         end;
+
+         -- Do the backsubstitution, using the upper-triangular part of LU
          for Row in reverse LU_Row loop
             declare
-               -- TODO : Change this to human-readable names
                Sum : Float_Type := Result (LU_Row_To_RHS (Row));
             begin
                for Col in LU_Row_To_LU_Col (Row) + Size_Type'(1) .. LU_Col'Last loop
@@ -161,6 +164,30 @@ package body Cookbook.Linear_Equations.LU_Decomp is
          end loop;
       end return;
    end Solve;
+
+
+   function Solve (LU : LU_Decomposition; Right_Hand_Vectors : F_Containers.Matrix) return F_Containers.Matrix is
+      subtype RHS_Row is Index_Type range Right_Hand_Vectors'First (1) .. Right_Hand_Vectors'Last (1);
+      subtype RHS_Col is Index_Type range Right_Hand_Vectors'First (2) .. Right_Hand_Vectors'Last (2);
+   begin
+      return Result : F_Containers.Matrix (RHS_Row'First .. RHS_Row'Last, RHS_Col'First .. RHS_Col'Last) do
+         -- Solve for the right-hand side vectors one by one
+         for Col in RHS_Col loop
+            declare
+               Current_Vector : F_Containers.Vector (RHS_Row);
+            begin
+               for Row in RHS_Row loop
+                  Current_Vector (Row) := Right_Hand_Vectors (Row, Col);
+               end loop;
+               Current_Vector := Solve (LU, Current_Vector);
+               for Row in RHS_Row loop
+                 Result (Row, Col) := Current_Vector (Row);
+               end loop;
+            end;
+         end loop;
+      end return;
+   end Solve;
+
 
    function Is_Lower_Triangular (Matrix : F_Containers.Matrix) return Boolean is
      (for all Row in Matrix'Range (1) =>
@@ -321,9 +348,28 @@ package body Cookbook.Linear_Equations.LU_Decomp is
          end;
       end Test_Crout_LU;
 
+      procedure Test_Solve is
+      begin
+         -- Try to solve for two right-hand sides with a 3x3 matrix
+         declare
+            Mat_3x3 : constant F_Containers.Matrix (11 .. 13, 31 .. 33) := ((10.0, 100.0, 0.0), (20.0, 0.0, 0.0), (14.0, 50.0, 15.0));
+            LU : constant LU_Decomposition := Crout_LU_Decomposition (Mat_3x3);
+            RHS_3x2 : constant F_Containers.Matrix (53 .. 55, 8 .. 9) := ((6.0, 0.0), (0.0, 3.0), (0.0, 24.0));
+            Result : constant F_Containers.Matrix := Solve (LU, RHS_3x2);
+         begin
+            Test_Element_Property (Result (53, 8) = 0.0, "should work with a 3x3 matrix and a 3x2 right-hand-side");
+            Test_Element_Property (Result (54, 8) = 0.06, "should work with a 3x3 matrix and a 3x2 right-hand-side");
+            Test_Element_Property (Result (55, 8) = -0.2, "should work with a 3x3 matrix and a 3x2 right-hand-side");
+            Test_Element_Property (Result (53, 9) = 0.15, "should work with a 3x3 matrix and a 3x2 right-hand-side");
+            Test_Element_Property (Result (54, 9) = -0.015, "should work with a 3x3 matrix and a 3x2 right-hand-side");
+            Test_Element_Property (Result (55, 9) = 1.51, "should work with a 3x3 matrix and a 3x2 right-hand-side");
+         end;
+      end Test_Solve;
+
       procedure Test_Linear_Equations_Package is
       begin
          Test_Package_Element (To_Entity_Name ("Crout_LU_Decomposition"), Test_Crout_LU'Access);
+         Test_Package_Element (To_Entity_Name ("Solve"), Test_Solve'Access);
          -- TODO : Test other LU-related methods
       end Test_Linear_Equations_Package;
    begin
