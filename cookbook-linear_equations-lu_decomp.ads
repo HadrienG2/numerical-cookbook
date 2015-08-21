@@ -14,7 +14,7 @@ package Cookbook.Linear_Equations.LU_Decomp is
        Post => (Matrix_Size (Crout_LU_Decomposition'Result) = Matrix'Length (1) and then
                       Is_LU_Decomposition_Of (Crout_LU_Decomposition'Result, Matrix));
 
-   -- Sometimes, it is useful to retrieve the original matrix from an LU decomposition, to evaluate decomposition quality or verify a contract
+   -- Sometimes, it is useful to retrieve the original matrix from an LU decomposition, e.g. to evaluate decomposition quality or verify a contract
    function Compute_Original_Matrix (LU : LU_Decomposition) return F_Containers.Matrix
      with
        Post => (Is_Square_Matrix (Compute_Original_Matrix'Result) and then Compute_Original_Matrix'Result'Length (1) = Matrix_Size (LU));
