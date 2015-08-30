@@ -10,11 +10,13 @@ procedure Main is
    -- and absolute value less than float prevision for comparison with zero.
    function Relatively_Equal (F1, F2 : Float) return Boolean is
       Comparison_Resolution : constant Float := 10.0**(-(Float'Digits - 1));
+      Min_F : constant Float := (if (abs F1) < (abs F2) then F1 else F2);
+      Max_F : constant Float := (if (abs F1) > (abs F2) then F1 else F2);
    begin
-      if F1 /= 0.0 then
-         return abs ((F1 - F2) / F1) < Comparison_Resolution;
+      if Min_F /= 0.0 then
+         return abs ((Max_F - Min_F) / Min_F) < Comparison_Resolution;
       else
-         return abs F2 < Comparison_Resolution;
+         return abs Max_F < Comparison_Resolution;
       end if;
    end Relatively_Equal;
 
