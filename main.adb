@@ -4,6 +4,7 @@ with Cookbook.Float_Utility;
 with Cookbook.Linear_Equations;
 with Cookbook.Linear_Equations.Gauss_Jordan;
 with Cookbook.Linear_Equations.LU_Decomp;
+with Cookbook.Linear_Equations.Tridiagonal;
 
 procedure Main is
    -- We take float equality as equality up to a difference of one significant digit for nonzero numbers,
@@ -28,6 +29,7 @@ procedure Main is
                                                                     F_Utility => Float_Utility);
    package Gauss_Jordan is new Linear_Equations.Gauss_Jordan with Unreferenced;
    package LU_Decomp is new Linear_Equations.LU_Decomp with Unreferenced;
+   package Tridiagonal is new Linear_Equations.Tridiagonal with Unreferenced;
 begin
    null;
 end Main;
