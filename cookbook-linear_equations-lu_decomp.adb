@@ -419,7 +419,7 @@ package body Cookbook.Linear_Equations.LU_Decomp is
          Test_Package_Element (To_Entity_Name ("Solve"), Test_Solve'Access);
          Test_Package_Element (To_Entity_Name ("Inverse_Matrix"), Test_Inverse'Access);
          Test_Package_Element (To_Entity_Name ("Determinant"), Test_Determinant'Access);
-         -- TODO : Test other LU-related methods
+         -- TODO : Test other LU-related methods as they are added
       end Test_Linear_Equations_Package;
    begin
       Test_Package (To_Entity_Name ("Linear_Equations.LU_Decomp"), Test_Linear_Equations_Package'Access);

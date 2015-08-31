@@ -7,6 +7,7 @@ package Cookbook.Linear_Equations is
 
    use type F_Containers.Matrix, F_Containers.Vector;
 
+   -- It is unfeasible to invert singular matrices. If such an attempt is detected, the following exception will be thrown.
    Singular_Matrix : exception;
 
    -- In this package, we'll be using square matrices a lot, so let's define what we mean by that
