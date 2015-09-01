@@ -75,7 +75,7 @@ package body Cookbook.Linear_Equations.LU_Decomp is
                      end loop;
 
                      -- If we can't find anything better than zero, it means that the matrix is singular.
-                     -- Unlike NR, I choose to consistently raise an exception when singularities are encountered.
+                     -- Unlike NR, I choose to consistently raise an exception when singular matrices are encountered.
                      if Scaled_Pivot_Abs = 0.0 then
                         raise Singular_Matrix;
                      end if;
@@ -95,12 +95,12 @@ package body Cookbook.Linear_Equations.LU_Decomp is
                   declare
                      Pivot_Element : constant Float_Type := LU.Data (Pivot_Row, Pivot_Col);
                   begin
-                     for Row in Pivot_Row + Size_Type'(1) .. LU.Last_Row loop
+                     for Row in Index_Type'Succ (Pivot_Row) .. LU.Last_Row loop
                         LU.Data (Row, Pivot_Col) := LU.Data (Row, Pivot_Col) / Pivot_Element;
                         declare
                            Pivot_Col_Value : constant Float_Type := LU.Data (Row, Pivot_Col);
                         begin
-                           for Col in Pivot_Col + Size_Type'(1) .. LU.Last_Col loop
+                           for Col in Index_Type'Succ (Pivot_Col) .. LU.Last_Col loop
                               LU.Data (Row, Col) := LU.Data (Row, Col) - Pivot_Col_Value * LU.Data (Pivot_Row, Col);
                            end loop;
                         end;
@@ -139,7 +139,7 @@ package body Cookbook.Linear_Equations.LU_Decomp is
                begin
                   Result (Initial_RHS_Row_Pos) := Result (LU_Row_To_RHS (Row));
                   if Nonzero_Element_Encountered then
-                     for Col in First_Nonzero_Col .. LU_Row_To_LU_Col (Row) - Size_Type'(1) loop
+                     for Col in First_Nonzero_Col .. Index_Type'Pred (LU_Row_To_LU_Col (Row)) loop
                         Sum := Sum - LU.Data (Row, Col) * Result (LU_Col_To_RHS (Col));
                      end loop;
                   elsif Sum /= 0.0 then
@@ -156,7 +156,7 @@ package body Cookbook.Linear_Equations.LU_Decomp is
             declare
                Sum : Float_Type := Result (LU_Row_To_RHS (Row));
             begin
-               for Col in LU_Row_To_LU_Col (Row) + Size_Type'(1) .. LU_Col'Last loop
+               for Col in Index_Type'Succ (LU_Row_To_LU_Col (Row)) .. LU_Col'Last loop
                   Sum := Sum - LU.Data (Row, Col) * Result (LU_Col_To_RHS (Col));
                end loop;
                Result (LU_Row_To_RHS (Row)) := Sum / LU.Data (Row, LU_Row_To_LU_Col (Row));
@@ -195,6 +195,7 @@ package body Cookbook.Linear_Equations.LU_Decomp is
          Result := Solve (LU, Result);
       end return;
    end Inverse_Matrix;
+   
 
    function Determinant (LU : LU_Decomposition) return Float_Type is
       subtype LU_Row is Index_Type range LU.First_Row .. LU.Last_Row;
