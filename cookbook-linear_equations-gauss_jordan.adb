@@ -21,7 +21,7 @@ package body Cookbook.Linear_Equations.Gauss_Jordan is
       function Mat_Col_To_RHS_Row (Matrix_Col : Mat_Col) return RHS_Row is (Matrix_Col - Mat_Col'First + RHS_Row'First);
 
       -- Finally, after row-wise pivoting, we may need to swap matrix columns, and this requires knowing the original pivot locations
-      subtype Pivot_Index is Index_Type range Index_Type'First .. Index_Type'First + Mat_Size - Size_Type'(1);
+      subtype Pivot_Index is Index_Type range Index_Type'First .. Index_Type'Pred (Index_Type'First + Mat_Size);
       Initial_Pivot_Rows : array (Pivot_Index) of Mat_Row; -- Named "indxr" in NR
       Initial_Pivot_Cols : array (Pivot_Index) of Mat_Col; -- Named "indxc" in NR
    begin
@@ -75,7 +75,7 @@ package body Cookbook.Linear_Equations.Gauss_Jordan is
             end if;
             Pivot_Row := Mat_Col_To_Mat_Row (Pivot_Col);
 
-            -- Divide the pivot row by the pivot element, and replace that element by its inverse (?)
+            -- Divide the pivot row by the pivot element, and replace that element by its inverse
             declare
                Pivot_Inv : constant Float_Type := 1.0 / Matrix (Pivot_Row, Pivot_Col); -- Named "pivinv" in NR
             begin
@@ -117,7 +117,7 @@ package body Cookbook.Linear_Equations.Gauss_Jordan is
 
 
    procedure Gauss_Jordan_Elimination (Matrix : in out F_Containers.Matrix) is
-      No_Right_Hand_Side : F_Containers.Matrix (Matrix'First (1) .. Matrix'Last (1), Index_Type'Last .. Index_Type'Last - Size_Type'(1));
+      No_Right_Hand_Side : F_Containers.Matrix (Matrix'First (1) .. Matrix'Last (1), Index_Type'Last .. Index_Type'Pred (Index_Type'Last);
    begin
       Gauss_Jordan_Elimination (Matrix, No_Right_Hand_Side);
    end Gauss_Jordan_Elimination;
