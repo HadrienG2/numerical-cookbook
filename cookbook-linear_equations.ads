@@ -18,10 +18,12 @@ package Cookbook.Linear_Equations is
    procedure Swap_Rows (Mat : in out F_Containers.Matrix; Row_1, Row_2 : Index_Type)
      with
        Pre => (Row_1 in Mat'Range (1) and then Row_2 in Mat'Range (1)),
-       Post => (for all J in Mat'Range (2) => Mat (Row_1, J) = Mat'Old (Row_2, J) and then Mat (Row_2, J) = Mat'Old (Row_1, J));
+       Post => (for all Col in Mat'Range (2) => 
+                  (Mat (Row_1, Col) = Mat'Old (Row_2, Col) and then Mat (Row_2, Col) = Mat'Old (Row_1, Col)));
    procedure Swap_Cols (Mat : in out F_Containers.Matrix; Col_1, Col_2 : Index_Type)
      with
        Pre => (Col_1 in Mat'Range (2) and then Col_2 in Mat'Range (2)),
-       Post => (for all I in Mat'Range (1) => Mat (I, Col_1) = Mat'Old (I, Col_2) and then Mat (I, Col_2) = Mat'Old (I, Col_1));
+       Post => (for all Row in Mat'Range (1) =>
+                  (Mat (Row, Col_1) = Mat'Old (Row, Col_2) and then Mat (Row, Col_2) = Mat'Old (Row, Col_1)));
 
 end Cookbook.Linear_Equations;
