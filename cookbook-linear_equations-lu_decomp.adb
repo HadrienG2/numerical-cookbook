@@ -302,7 +302,13 @@ package body Cookbook.Linear_Equations.LU_Decomp is
             Mat_1x1 : constant F_Containers.Matrix (3 .. 3, 5 .. 5) := 0.1 * F_Containers.Identity_Matrix (1);
             LU : constant LU_Decomposition := Crout_LU_Decomposition (Mat_1x1);
          begin
-            Test_Element_Property (LU.Data (LU.Data'First (1), LU.Data'First (2)) = 0.1, "should work with a 1x1 matrix");
+            Test_Element_Property (LU = (First_Row => 3,
+                                         Last_Row => 3,
+                                         First_Col => 5,
+                                         Last_Col => 5,
+                                         Data => (3 => (5 => 0.1)),
+                                         Determinant_Multiplier => 1.0,
+                                         Initial_Row_Positions => (3 => 3)), "should work with a 1x1 matrix");
          end;
 
          -- Test that 2x2 singular matrices also raise exceptions
@@ -310,9 +316,8 @@ package body Cookbook.Linear_Equations.LU_Decomp is
             Singular2 : constant F_Containers.Matrix (15 .. 16, 8 .. 9) := ((1.0, 1.0), (1.0, 1.0));
          begin
             declare
-               LU : constant LU_Decomposition := Crout_LU_Decomposition (Singular2);
+               LU : constant LU_Decomposition := Crout_LU_Decomposition (Singular2) with Unreferenced;
             begin
-               pragma Unreferenced (LU);  -- DEBUG : For some reason, an aspect would make GNAT 2015 unhappy even if it's fine for a 1x1 matrix
                Test_Element_Property (False, "should throw an exception when encountering a singular matrix");
             end;
          exception
@@ -324,7 +329,13 @@ package body Cookbook.Linear_Equations.LU_Decomp is
             Mat_2x2 : constant F_Containers.Matrix (24 .. 25, 15 .. 16) := ((100.0, 0.0), (13.13, 4.0));
             LU : constant LU_Decomposition := Crout_LU_Decomposition (Mat_2x2);
          begin
-            Test_Element_Property (LU.Data = ((100.0, 0.0), (0.1313, 4.0)), "should work with a lower-triangular 2x2 matrix");
+            Test_Element_Property (LU = (First_Row => 24,
+                                         Last_Row => 25,
+                                         First_Col => 15,
+                                         Last_Col => 16,
+                                         Data => ((100.0, 0.0), (0.1313, 4.0)),
+                                         Determinant_Multiplier => 1.0,
+                                         Initial_Row_Positions => (24, 25)), "should work with a lower-triangular 2x2 matrix");
          end;
 
          -- Try it with an upper-triangular 2x2 matrix
@@ -332,7 +343,13 @@ package body Cookbook.Linear_Equations.LU_Decomp is
             Mat_2x2 : constant F_Containers.Matrix (55 .. 56, 44 .. 45) := ((50.0, 18.0), (0.0, 0.5));
             LU : constant LU_Decomposition := Crout_LU_Decomposition (Mat_2x2);
          begin
-            Test_Element_Property (LU.Data = ((50.0, 18.0), (0.0, 0.5)), "should work with an upper-triangular 2x2 matrix");
+            Test_Element_Property (LU = (First_Row => 55,
+                                         Last_Row => 56,
+                                         First_Col => 44,
+                                         Last_Col => 45,
+                                         Data => ((50.0, 18.0), (0.0, 0.5)),
+                                         Determinant_Multiplier => 1.0,
+                                         Initial_Row_Positions => (55, 56)), "should work with an upper-triangular 2x2 matrix");
          end;
 
          -- Try it with a reverse-diagonal matrix, check that it pivots properly
@@ -340,8 +357,13 @@ package body Cookbook.Linear_Equations.LU_Decomp is
             Mat_2x2 : constant F_Containers.Matrix (50 .. 51, 3 .. 4) := ((0.0, 4.0), (0.5, 0.0));
             LU : constant LU_Decomposition := Crout_LU_Decomposition (Mat_2x2);
          begin
-            Test_Element_Property (LU.Data = ((0.5, 0.0), (0.0, 4.0)), "should work with a reverse-diagonal 2x2 matrix");
-            Test_Element_Property (LU.Initial_Row_Positions = (50 => 51, 51 => 51), "should work with a reverse-diagonal 2x2 matrix");
+            Test_Element_Property (LU = (First_Row => 50,
+                                         Last_Row => 51,
+                                         First_Col => 3,
+                                         Last_Col => 4,
+                                         Data => ((0.5, 0.0), (0.0, 4.0)),
+                                         Determinant_Multiplier => -1.0,
+                                         Initial_Row_Positions => (51, 51)), "should work with a reverse-diagonal 2x2 matrix");
          end;
 
          -- Also try with a 3x3 matrix in order to achieve full coverage
@@ -349,7 +371,13 @@ package body Cookbook.Linear_Equations.LU_Decomp is
             Mat_3x3 : constant F_Containers.Matrix (11 .. 13, 31 .. 33) := ((10.0, 100.0, 0.0), (20.0, 0.0, 0.0), (14.0, 50.0, 15.0));
             LU : constant LU_Decomposition := Crout_LU_Decomposition (Mat_3x3);
          begin
-            Test_Element_Property (LU.Data = ((20.0, 0.0, 0.0), (0.5, 100.0, 0.0), (0.7, 0.5, 15.0)), "should work with a 3x3 matrix");
+            Test_Element_Property (LU = (First_Row => 11,
+                                         Last_Row => 13,
+                                         First_Col => 31,
+                                         Last_Col => 33,
+                                         Data => ((20.0, 0.0, 0.0), (0.5, 100.0, 0.0), (0.7, 0.5, 15.0)),
+                                         Determinant_Multiplier => -1.0,
+                                         Initial_Row_Positions => (12, 12, 13)), "should work with a 3x3 matrix");
          end;
       end Test_Crout_LU;
 
