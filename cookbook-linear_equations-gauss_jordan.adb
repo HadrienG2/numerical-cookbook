@@ -117,7 +117,7 @@ package body Cookbook.Linear_Equations.Gauss_Jordan is
 
 
    procedure Gauss_Jordan_Elimination (Matrix : in out F_Containers.Matrix) is
-      No_Right_Hand_Side : F_Containers.Matrix (Matrix'First (1) .. Matrix'Last (1), Index_Type'Last .. Index_Type'Pred (Index_Type'Last);
+      No_Right_Hand_Side : F_Containers.Matrix (Matrix'First (1) .. Matrix'Last (1), Index_Type'Last .. Index_Type'Pred (Index_Type'Last));
    begin
       Gauss_Jordan_Elimination (Matrix, No_Right_Hand_Side);
    end Gauss_Jordan_Elimination;

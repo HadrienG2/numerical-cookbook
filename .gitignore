@@ -12,3 +12,4 @@ gcov_input.txt
 *-loc.xml
 *.bexch
 main
+*.exe

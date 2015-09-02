@@ -18,7 +18,7 @@ package Cookbook.Linear_Equations is
    procedure Swap_Rows (Mat : in out F_Containers.Matrix; Row_1, Row_2 : Index_Type)
      with
        Pre => (Row_1 in Mat'Range (1) and then Row_2 in Mat'Range (1)),
-       Post => (for all Col in Mat'Range (2) => 
+       Post => (for all Col in Mat'Range (2) =>
                   (Mat (Row_1, Col) = Mat'Old (Row_2, Col) and then Mat (Row_2, Col) = Mat'Old (Row_1, Col)));
    procedure Swap_Cols (Mat : in out F_Containers.Matrix; Col_1, Col_2 : Index_Type)
      with

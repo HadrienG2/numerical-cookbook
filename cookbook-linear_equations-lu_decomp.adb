@@ -195,7 +195,7 @@ package body Cookbook.Linear_Equations.LU_Decomp is
          Result := Solve (LU, Result);
       end return;
    end Inverse_Matrix;
-   
+
 
    function Determinant (LU : LU_Decomposition) return Float_Type is
       subtype LU_Row is Index_Type range LU.First_Row .. LU.Last_Row;
