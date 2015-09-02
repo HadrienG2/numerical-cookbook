@@ -58,8 +58,8 @@ package body Cookbook.Linear_Equations.Tridiagonal is
                                                       Lower_Diagonal => (others => <>),
                                                       Diagonal => (others => <>),
                                                       Upper_Diagonal => (others => <>));
-            Vec_0x0 : constant F_Containers.Vector (69 .. 68) := (others => <>);
-            Result : constant F_Containers.Vector := Mat_0x0 * Vec_0x0 with Unreferenced;
+            Vec_0 : constant F_Containers.Vector (69 .. 68) := (others => <>);
+            Result : constant F_Containers.Vector := Mat_0x0 * Vec_0 with Unreferenced;
          begin
             Test_Element_Property (True, "should work with 0x0 matrices");
          end;
@@ -71,8 +71,8 @@ package body Cookbook.Linear_Equations.Tridiagonal is
                                                       Lower_Diagonal => (others => <>),
                                                       Diagonal => (others => 1.5),
                                                       Upper_Diagonal => (others => <>));
-            Vec_1x1 : constant F_Containers.Vector (42 .. 42) := (others => 2.0);
-            Result : constant F_Containers.Vector := Mat_1x1 * Vec_1x1;
+            Vec_1 : constant F_Containers.Vector (42 .. 42) := (others => 2.0);
+            Result : constant F_Containers.Vector := Mat_1x1 * Vec_1;
          begin
             Test_Element_Property (Result (Result'First) = 3.0, "should work with 1x1 matrices");
          end;
@@ -84,14 +84,37 @@ package body Cookbook.Linear_Equations.Tridiagonal is
                                                       Lower_Diagonal => (0.0, 33.0),    -- aka ((44.0, 1.25),
                                                       Diagonal => (44.0, 0.5),          --      (33.0, 0.5))
                                                       Upper_Diagonal => (1.25, 0.0));
-            Vec_2x2 : constant F_Containers.Vector (22 .. 23) := (12.0, 15.0);
-            Result : constant F_Containers.Vector := Mat_2x2 * Vec_2x2;
+            Vec_2 : constant F_Containers.Vector (22 .. 23) := (12.0, 15.0);
+            Result : constant F_Containers.Vector := Mat_2x2 * Vec_2;
          begin
             Test_Element_Property (Result = (546.75, 403.5), "should work with 2x2 matrices");
          end;
 
-         -- TODO : Try a 3x3 matrix (single loop execution)
-         -- TODO : Try a 4x4 matrix (two loop executions)
+         -- Test that 3x3 matrices (single loop execution) work
+         declare
+            Mat_3x3 : constant Tridiagonal_Matrix := (First_Index => 32,
+                                                      Last_Index => 34,
+                                                      Lower_Diagonal => (0.0, 1.0, 2.0),   -- aka ((3.0, 6.0, 0.0),
+                                                      Diagonal => (3.0, 4.0, 5.0),         --      (1.0, 4.0, 7.0),
+                                                      Upper_Diagonal => (6.0, 7.0, 0.0));  --      (0.0, 2.0, 5.0))
+            Vec_3 : constant F_Containers.Vector (89 .. 91) := (8.0, 9.0, 10.0);
+            Result : constant F_Containers.Vector := Mat_3x3 * Vec_3;
+         begin
+            Test_Element_Property (Result = (78.0, 114.0, 68.0), "should work with 3x3 matrices");
+         end;
+
+         -- Test that 4x4 matrices (multiple loop executions) work
+         declare
+            Mat_4x4 : constant Tridiagonal_Matrix := (First_Index => 250,
+                                                      Last_Index => 253,                          -- aka ((11.0,  7.0,  0.0,  0.0),
+                                                      Lower_Diagonal => (0.0, 14.0, 13.0, 12.0),  --      (14.0, 10.0,  6.0,  0.0),
+                                                      Diagonal => (11.0, 10.0, 9.0, 8.0),         --      ( 0.0, 13.0,  9.0,  5.0))
+                                                      Upper_Diagonal => (7.0, 6.0, 5.0, 0.0));    --      ( 0.0,  0.0, 12.0,  8.0))
+            Vec_4 : constant F_Containers.Vector (1 .. 4) := (4.0, 3.0, 2.0, 1.0);
+            Result : constant F_Containers.Vector := Mat_4x4 * Vec_4;
+         begin
+            Test_Element_Property (Result = (65.0, 98.0, 62.0, 32.0), "should work with 4x4 matrices");
+         end;
       end Test_MatVecMul;
 
       procedure Test_Tridiagonal_Package is
