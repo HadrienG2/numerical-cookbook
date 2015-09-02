@@ -12,7 +12,7 @@ package Cookbook.Generic_Containers is
    type Vector is array (Index_Type range <>) of Item_Type;
    type Matrix is array (Index_Type range <>, Index_Type range <>) of Item_Type;
 
-   -- Comparison uses the custom equality operator
+   -- Comparison uses the custom equality operator defined in cookbook.ads
    overriding function "=" (Left, Right : Matrix) return Boolean
      with
        Pre => (Left'Length (1) = Right'Length (1) and then Left'Length (2) = Right'Length (2));
