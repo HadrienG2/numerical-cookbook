@@ -16,29 +16,8 @@ generic
 
 package Cookbook is
 
-   -- These are the basic utility macros as defined by Numerical Recipes
-   generic
-      type T is private;
-      with function "<" (A, B : T) return Boolean is <>;
-      with function "<" (A : T; B : Float_Type) return Boolean is <>;
-      with function "abs" (A : T) return T is <>;
-      with function "-" (A : T) return T is <>;
-   package Generic_Utility is
-
-      function Max (A, B : T) return T is
-        (if A < B then B else A);
-
-      function Min (A, B : T) return T is
-        (if A < B then A else B);
-
-      procedure Swap (A, B : in out T)
-        with
-          Post => (A = B'Old and then B = A'Old),
-          Inline;
-
-      function Sign (A, B : T) return T is
-        (if B < 0.0 then -abs A else abs A);
-
-   end Generic_Utility;
+   -- This package is empty, its only purposes are...
+   --   * To act as a root of the package hierarchy
+   --   * To declare the floating-point and array indexing types used by the rest of Numerical Cookbook
 
 end Cookbook;
