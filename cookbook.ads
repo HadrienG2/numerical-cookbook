@@ -16,7 +16,7 @@ generic
 package Cookbook is
 
    -- This package is empty, its only purposes are...
-   --   * To act as a root of the package hierarchy
+   --   * To act as a root of the Numerical Cookbook package hierarchy
    --   * To declare the floating-point and array indexing types used by the rest of the Numerical Cookbook suite
 
 end Cookbook;
