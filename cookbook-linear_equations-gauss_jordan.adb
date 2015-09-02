@@ -146,9 +146,8 @@ package body Cookbook.Linear_Equations.Gauss_Jordan is
             RHS_1x2 : F_Containers.Matrix (3 .. 3, 5 .. 6) := (3 => (5.0, 10.0));
          begin
             Gauss_Jordan_Elimination (Mat_1x1, RHS_1x2);
-            Test_Element_Property (Mat_1x1 (Mat_1x1'First (1), Mat_1x1'First (2)) = 10.0, "should work with a 1x1 matrix");
-            Test_Element_Property (RHS_1x2 (RHS_1x2'First (1), RHS_1x2'First (2)) = 50.0, "should work with a 1x2 right-hand side");
-            Test_Element_Property (RHS_1x2 (RHS_1x2'First (1), RHS_1x2'Last (2)) = 100.0, "should work with a 1x2 right-hand side");
+            Test_Element_Property (Mat_1x1 = (7 => (9 => 10.0)), "should work with a 1x1 matrix");
+            Test_Element_Property (RHS_1x2 = (3 => (50.0, 100.0)), "should work with a 1x2 right-hand side");
             Gauss_Jordan_Elimination (Mat_1x1);
             Test_Element_Property (Mat_1x1 = Init_1x1, "should work when a matrix is inverted twice");
          end;
