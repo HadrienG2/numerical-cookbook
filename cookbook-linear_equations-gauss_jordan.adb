@@ -143,7 +143,7 @@ package body Cookbook.Linear_Equations.Gauss_Jordan is
          declare
             Init_1x1 : constant F_Containers.Matrix (7 .. 7, 9 .. 9) := 0.1 * F_Containers.Identity_Matrix (1);
             Mat_1x1 : F_Containers.Matrix := Init_1x1;
-            RHS_1x2 : F_Containers.Matrix (3 .. 3, 5 .. 6) := (3 => (5 => 5.0, 6 => 10.0));
+            RHS_1x2 : F_Containers.Matrix (3 .. 3, 5 .. 6) := (3 => (5.0, 10.0));
          begin
             Gauss_Jordan_Elimination (Mat_1x1, RHS_1x2);
             Test_Element_Property (Mat_1x1 (Mat_1x1'First (1), Mat_1x1'First (2)) = 10.0, "should work with a 1x1 matrix");
@@ -156,33 +156,21 @@ package body Cookbook.Linear_Equations.Gauss_Jordan is
          -- Try it with a diagonal 2x2 matrix
          declare
             Mat_2x2 : F_Containers.Matrix (11 .. 12, 15 .. 16) := ((0.5, 0.0), (0.0, 4.0));
-            RHS_2x2 : F_Containers.Matrix (42 .. 43, 65 .. 66) := (42 => (65 => 5.0, 66 => 0.0), 43 => (65 => 0.0, 66 => 10.0));
+            RHS_2x2 : F_Containers.Matrix (42 .. 43, 65 .. 66) := ((5.0, 0.0), (0.0, 10.0));
          begin
             Gauss_Jordan_Elimination (Mat_2x2, RHS_2x2);
-            Test_Element_Property (Mat_2x2 (Mat_2x2'First (1), Mat_2x2'First (2)) = 2.0, "should work with a diagonal 2x2 matrix");
-            Test_Element_Property (Mat_2x2 (Mat_2x2'First (1), Mat_2x2'Last (2)) = 0.0, "should work with a diagonal 2x2 matrix");
-            Test_Element_Property (Mat_2x2 (Mat_2x2'Last (1), Mat_2x2'First (2)) = 0.0, "should work with a diagonal 2x2 matrix");
-            Test_Element_Property (Mat_2x2 (Mat_2x2'Last (1), Mat_2x2'Last (2)) = 0.25, "should work with a diagonal 2x2 matrix");
-            Test_Element_Property (RHS_2x2 (RHS_2x2'First (1), RHS_2x2'First (2)) = 10.0, "should work with a 2x2 right-hand side");
-            Test_Element_Property (RHS_2x2 (RHS_2x2'Last (1), RHS_2x2'First (2)) = 0.0, "should work with a 2x2 right-hand side");
-            Test_Element_Property (RHS_2x2 (RHS_2x2'First (1), RHS_2x2'Last (2)) = 0.0, "should work with a 2x2 right-hand side");
-            Test_Element_Property (RHS_2x2 (RHS_2x2'Last (1), RHS_2x2'Last (2)) = 2.5, "should work with a 2x2 right-hand side");
+            Test_Element_Property (Mat_2x2 = ((2.0, 0.0), (0.0, 0.25)), "should work with a diagonal 2x2 matrix");
+            Test_Element_Property (RHS_2x2 = ((10.0, 0.0), (0.0, 2.5)), "should work with a 2x2 right-hand side");
          end;
 
          -- Try it with a non-diagonal matrix
          declare
             Mat_2x2 : F_Containers.Matrix (50 .. 51, 3 .. 4) := ((0.0, 4.0), (0.5, 0.0));
-            RHS_2x2 : F_Containers.Matrix (42 .. 43, 65 .. 66) := (42 => (65 => 5.0, 66 => 0.0), 43 => (65 => 0.0, 66 => 10.0));
+            RHS_2x2 : F_Containers.Matrix (42 .. 43, 65 .. 66) := ((5.0, 0.0), (0.0, 10.0));
          begin
             Gauss_Jordan_Elimination (Mat_2x2, RHS_2x2);
-            Test_Element_Property (Mat_2x2 (Mat_2x2'First (1), Mat_2x2'First (2)) = 0.0, "should work with a non-diagonal 2x2 matrix");
-            Test_Element_Property (Mat_2x2 (Mat_2x2'First (1), Mat_2x2'Last (2)) = 2.0, "should work with a non-diagonal 2x2 matrix");
-            Test_Element_Property (Mat_2x2 (Mat_2x2'Last (1), Mat_2x2'First (2)) = 0.25, "should work with a non-diagonal 2x2 matrix");
-            Test_Element_Property (Mat_2x2 (Mat_2x2'Last (1), Mat_2x2'Last (2)) = 0.0, "should work with a non-diagonal 2x2 matrix");
-            Test_Element_Property (RHS_2x2 (RHS_2x2'First (1), RHS_2x2'First (2)) = 0.0, "should work with a 2x2 right-hand side");
-            Test_Element_Property (RHS_2x2 (RHS_2x2'Last (1), RHS_2x2'First (2)) = 1.25, "should work with a 2x2 right-hand side");
-            Test_Element_Property (RHS_2x2 (RHS_2x2'First (1), RHS_2x2'Last (2)) = 20.0, "should work with a 2x2 right-hand side");
-            Test_Element_Property (RHS_2x2 (RHS_2x2'Last (1), RHS_2x2'Last (2)) = 0.0, "should work with a 2x2 right-hand side");
+            Test_Element_Property (Mat_2x2 = ((0.0, 2.0), (0.25, 0.0)), "should work with a non-diagonal 2x2 matrix");
+            Test_Element_Property (RHS_2x2 = ((0.0, 20.0), (1.25, 0.0)), "should work with a 2x2 right-hand side");
          end;
       end Test_Gauss_Jordan;
 

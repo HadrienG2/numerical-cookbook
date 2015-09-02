@@ -324,10 +324,7 @@ package body Cookbook.Linear_Equations.LU_Decomp is
             Mat_2x2 : constant F_Containers.Matrix (24 .. 25, 15 .. 16) := ((100.0, 0.0), (13.13, 4.0));
             LU : constant LU_Decomposition := Crout_LU_Decomposition (Mat_2x2);
          begin
-            Test_Element_Property (LU.Data (LU.Data'First (1), LU.Data'First (2)) = 100.0, "should work with a lower-triangular 2x2 matrix");
-            Test_Element_Property (LU.Data (LU.Data'First (1), LU.Data'Last (2)) = 0.0, "should work with a lower-triangular 2x2 matrix");
-            Test_Element_Property (LU.Data (LU.Data'Last (1), LU.Data'First (2)) = 0.1313, "should work with a lower-triangular 2x2 matrix");
-            Test_Element_Property (LU.Data (LU.Data'Last (1), LU.Data'Last (2)) = 4.0, "should work with a lower-triangular 2x2 matrix");
+            Test_Element_Property (LU.Data = ((100.0, 0.0), (0.1313, 4.0)), "should work with a lower-triangular 2x2 matrix");
          end;
 
          -- Try it with an upper-triangular 2x2 matrix
@@ -335,10 +332,7 @@ package body Cookbook.Linear_Equations.LU_Decomp is
             Mat_2x2 : constant F_Containers.Matrix (55 .. 56, 44 .. 45) := ((50.0, 18.0), (0.0, 0.5));
             LU : constant LU_Decomposition := Crout_LU_Decomposition (Mat_2x2);
          begin
-            Test_Element_Property (LU.Data (LU.Data'First (1), LU.Data'First (2)) = 50.0, "should work with an upper-triangular 2x2 matrix");
-            Test_Element_Property (LU.Data (LU.Data'First (1), LU.Data'Last (2)) = 18.0, "should work with an upper-triangular 2x2 matrix");
-            Test_Element_Property (LU.Data (LU.Data'Last (1), LU.Data'First (2)) = 0.0, "should work with an upper-triangular 2x2 matrix");
-            Test_Element_Property (LU.Data (LU.Data'Last (1), LU.Data'Last (2)) = 0.5, "should work with an upper-triangular 2x2 matrix");
+            Test_Element_Property (LU.Data = ((50.0, 18.0), (0.0, 0.5)), "should work with an upper-triangular 2x2 matrix");
          end;
 
          -- Try it with a reverse-diagonal matrix, check that it pivots properly
@@ -346,10 +340,8 @@ package body Cookbook.Linear_Equations.LU_Decomp is
             Mat_2x2 : constant F_Containers.Matrix (50 .. 51, 3 .. 4) := ((0.0, 4.0), (0.5, 0.0));
             LU : constant LU_Decomposition := Crout_LU_Decomposition (Mat_2x2);
          begin
-            Test_Element_Property (LU.Data (LU.Data'First (1), LU.Data'First (2)) = 0.5, "should work with a reverse-diagonal 2x2 matrix");
-            Test_Element_Property (LU.Data (LU.Data'First (1), LU.Data'Last (2)) = 0.0, "should work with a reverse-diagonal 2x2 matrix");
-            Test_Element_Property (LU.Data (LU.Data'Last (1), LU.Data'First (2)) = 0.0, "should work with a reverse-diagonal 2x2 matrix");
-            Test_Element_Property (LU.Data (LU.Data'Last (1), LU.Data'Last (2)) = 4.0, "should work with a reverse-diagonal 2x2 matrix");
+            Test_Element_Property (LU.Data = ((0.5, 0.0), (0.0, 4.0)), "should work with a reverse-diagonal 2x2 matrix");
+            Test_Element_Property (LU.Initial_Row_Positions = (50 => 51, 51 => 51), "should work with a reverse-diagonal 2x2 matrix");
          end;
 
          -- Also try with a 3x3 matrix in order to achieve full coverage
@@ -357,15 +349,7 @@ package body Cookbook.Linear_Equations.LU_Decomp is
             Mat_3x3 : constant F_Containers.Matrix (11 .. 13, 31 .. 33) := ((10.0, 100.0, 0.0), (20.0, 0.0, 0.0), (14.0, 50.0, 15.0));
             LU : constant LU_Decomposition := Crout_LU_Decomposition (Mat_3x3);
          begin
-            Test_Element_Property (LU.Data (11, 31) = 20.0, "should work with a 3x3 matrix");
-            Test_Element_Property (LU.Data (11, 32) = 0.0, "should work with a 3x3 matrix");
-            Test_Element_Property (LU.Data (11, 33) = 0.0, "should work with a 3x3 matrix");
-            Test_Element_Property (LU.Data (12, 31) = 0.5, "should work with a 3x3 matrix");
-            Test_Element_Property (LU.Data (12, 32) = 100.0, "should work with a 3x3 matrix");
-            Test_Element_Property (LU.Data (12, 33) = 0.0, "should work with a 3x3 matrix");
-            Test_Element_Property (LU.Data (13, 31) = 0.7, "should work with a 3x3 matrix");
-            Test_Element_Property (LU.Data (13, 32) = 0.5, "should work with a 3x3 matrix");
-            Test_Element_Property (LU.Data (13, 33) = 15.0, "should work with a 3x3 matrix");
+            Test_Element_Property (LU.Data = ((20.0, 0.0, 0.0), (0.5, 100.0, 0.0), (0.7, 0.5, 15.0)), "should work with a 3x3 matrix");
          end;
       end Test_Crout_LU;
 
@@ -378,12 +362,8 @@ package body Cookbook.Linear_Equations.LU_Decomp is
             RHS_3x2 : constant F_Containers.Matrix (53 .. 55, 8 .. 9) := ((6.0, 0.0), (0.0, 3.0), (0.0, 24.0));
             Result : constant F_Containers.Matrix := Solve (LU, RHS_3x2);
          begin
-            Test_Element_Property (Result (53, 8) = 0.0, "should work with a 3x3 matrix and a 3x2 right-hand-side");
-            Test_Element_Property (Result (54, 8) = 0.06, "should work with a 3x3 matrix and a 3x2 right-hand-side");
-            Test_Element_Property (Result (55, 8) = -0.2, "should work with a 3x3 matrix and a 3x2 right-hand-side");
-            Test_Element_Property (Result (53, 9) = 0.15, "should work with a 3x3 matrix and a 3x2 right-hand-side");
-            Test_Element_Property (Result (54, 9) = -0.015, "should work with a 3x3 matrix and a 3x2 right-hand-side");
-            Test_Element_Property (Result (55, 9) = 1.51, "should work with a 3x3 matrix and a 3x2 right-hand-side");
+            Test_Element_Property (Result = ((0.0, 0.15), (0.06, -0.015), (-0.2, 1.51)),
+                                   "should work with a 3x3 matrix and a 3x2 right-hand-side");
          end;
       end Test_Solve;
 
@@ -395,10 +375,7 @@ package body Cookbook.Linear_Equations.LU_Decomp is
             LU : constant LU_Decomposition := Crout_LU_Decomposition (Mat_2x2);
             Mat_Inv : constant F_Containers.Matrix := Inverse_Matrix (LU);
          begin
-            Test_Element_Property (Mat_Inv (Mat_Inv'First (1), Mat_Inv'First (2)) = 0.0, "should work with a reverse-diagonal 2x2 matrix");
-            Test_Element_Property (Mat_Inv (Mat_Inv'First (1), Mat_Inv'Last (2)) = 2.0, "should work with a reverse-diagonal 2x2 matrix");
-            Test_Element_Property (Mat_Inv (Mat_Inv'Last (1), Mat_Inv'First (2)) = 0.25, "should work with a reverse-diagonal 2x2 matrix");
-            Test_Element_Property (Mat_Inv (Mat_Inv'Last (1), Mat_Inv'Last (2)) = 0.0, "should work with a reverse-diagonal 2x2 matrix");
+            Test_Element_Property (Mat_Inv = ((0.0, 2.0), (0.25, 0.0)), "should work with a reverse-diagonal 2x2 matrix");
          end;
       end Test_Inverse;
 
