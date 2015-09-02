@@ -68,9 +68,9 @@ package body Cookbook.Linear_Equations.Tridiagonal is
          declare
             Mat_1x1 : constant Tridiagonal_Matrix := (First_Index => Index_Type'First,
                                                       Last_Index => Index_Type'First,
-                                                      Lower_Diagonal => (others => <>),
+                                                      Lower_Diagonal => (others => 42.0),
                                                       Diagonal => (others => 1.5),
-                                                      Upper_Diagonal => (others => <>));
+                                                      Upper_Diagonal => (others => 42.0));
             Vec_1 : constant F_Containers.Vector (42 .. 42) := (others => 2.0);
             Result : constant F_Containers.Vector := Mat_1x1 * Vec_1;
          begin
@@ -81,9 +81,9 @@ package body Cookbook.Linear_Equations.Tridiagonal is
          declare
             Mat_2x2 : constant Tridiagonal_Matrix := (First_Index => 55,
                                                       Last_Index => 56,
-                                                      Lower_Diagonal => (0.0, 33.0),    -- aka ((44.0, 1.25),
-                                                      Diagonal => (44.0, 0.5),          --      (33.0, 0.5))
-                                                      Upper_Diagonal => (1.25, 0.0));
+                                                      Lower_Diagonal => (42.0, 33.0),  -- aka ((44.0, 1.25),
+                                                      Diagonal => (44.0, 0.5),         --      (33.0, 0.5))
+                                                      Upper_Diagonal => (1.25, 42.0));
             Vec_2 : constant F_Containers.Vector (22 .. 23) := (12.0, 15.0);
             Result : constant F_Containers.Vector := Mat_2x2 * Vec_2;
          begin
@@ -94,9 +94,9 @@ package body Cookbook.Linear_Equations.Tridiagonal is
          declare
             Mat_3x3 : constant Tridiagonal_Matrix := (First_Index => 32,
                                                       Last_Index => 34,
-                                                      Lower_Diagonal => (0.0, 1.0, 2.0),   -- aka ((3.0, 6.0, 0.0),
-                                                      Diagonal => (3.0, 4.0, 5.0),         --      (1.0, 4.0, 7.0),
-                                                      Upper_Diagonal => (6.0, 7.0, 0.0));  --      (0.0, 2.0, 5.0))
+                                                      Lower_Diagonal => (42.0, 1.0, 2.0),   -- aka ((3.0, 6.0, 0.0),
+                                                      Diagonal => (3.0, 4.0, 5.0),          --      (1.0, 4.0, 7.0),
+                                                      Upper_Diagonal => (6.0, 7.0, 42.0));  --      (0.0, 2.0, 5.0))
             Vec_3 : constant F_Containers.Vector (89 .. 91) := (8.0, 9.0, 10.0);
             Result : constant F_Containers.Vector := Mat_3x3 * Vec_3;
          begin
@@ -107,9 +107,9 @@ package body Cookbook.Linear_Equations.Tridiagonal is
          declare
             Mat_4x4 : constant Tridiagonal_Matrix := (First_Index => 250,
                                                       Last_Index => 253,                          -- aka ((11.0,  7.0,  0.0,  0.0),
-                                                      Lower_Diagonal => (0.0, 14.0, 13.0, 12.0),  --      (14.0, 10.0,  6.0,  0.0),
+                                                      Lower_Diagonal => (42.0, 14.0, 13.0, 12.0), --      (14.0, 10.0,  6.0,  0.0),
                                                       Diagonal => (11.0, 10.0, 9.0, 8.0),         --      ( 0.0, 13.0,  9.0,  5.0))
-                                                      Upper_Diagonal => (7.0, 6.0, 5.0, 0.0));    --      ( 0.0,  0.0, 12.0,  8.0))
+                                                      Upper_Diagonal => (7.0, 6.0, 5.0, 42.0));   --      ( 0.0,  0.0, 12.0,  8.0))
             Vec_4 : constant F_Containers.Vector (1 .. 4) := (4.0, 3.0, 2.0, 1.0);
             Result : constant F_Containers.Vector := Mat_4x4 * Vec_4;
          begin
