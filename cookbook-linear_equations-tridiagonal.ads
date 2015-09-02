@@ -19,6 +19,12 @@ package Cookbook.Linear_Equations.Tridiagonal is
        Pre => (Matrix_Size (Left) = Right'Length),
        Post => ("*"'Result'Length = Matrix_Size (Left));
 
+   function Solve (Matrix : Tridiagonal_Matrix; Right_Hand_Vector : F_Containers.Vector) return F_Containers.Vector
+     with
+       Pre => (Matrix_Size (Matrix) = Right_Hand_Vector'Length),
+       Post => (Solve'Result'Length = Right_Hand_Vector'Length and then
+                  Matrix * Solve'Result = Right_Hand_Vector);
+
    -- Test the functions within this package
    procedure Test;
 

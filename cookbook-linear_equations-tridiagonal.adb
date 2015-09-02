@@ -45,6 +45,13 @@ package body Cookbook.Linear_Equations.Tridiagonal is
       end return;
    end "*";
 
+
+   function Solve (Matrix : Tridiagonal_Matrix; Right_Hand_Vector : F_Containers.Vector) return F_Containers.Vector is
+   begin
+      -- TODO : Reuse and rewrite NR's code
+   end;
+
+
    procedure Test is
       package Test_Runner is new Cookbook.Test;
       use Test_Runner;
@@ -120,6 +127,7 @@ package body Cookbook.Linear_Equations.Tridiagonal is
       procedure Test_Tridiagonal_Package is
       begin
          Test_Package_Element (To_Entity_Name ("Matrix_Vector_Multiplication"), Test_MatVecMul'Access);
+         -- TODO : Intégrer des tests pour les autres fonctionnalités impliquant des matrices tridiagonales.
       end Test_Tridiagonal_Package;
    begin
       Test_Package (To_Entity_Name ("Linear_Equations.Tridiagonal"), Test_Tridiagonal_Package'Access);
