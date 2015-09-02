@@ -1,14 +1,6 @@
-with Cookbook.Generic_Utility;
 with Cookbook.Test;
 
 package body Cookbook.Float_Utility is
-
-   package Implementation is new Cookbook.Generic_Utility (Float_Type, "abs" => Cookbook."abs");
-
-   function Max (A, B : Float_Type) return Float_Type renames Implementation.Max;
-   function Min (A, B : Float_Type) return Float_Type renames Implementation.Min;
-   procedure Swap (A, B : in out Float_Type) renames Implementation.Swap;
-   function Sign (A, B : Float_Type) return Float_Type renames Implementation.Sign;
 
    procedure Test is
       package Test_Runner is new Cookbook.Test;
