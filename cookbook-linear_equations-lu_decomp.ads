@@ -43,7 +43,7 @@ package Cookbook.Linear_Equations.LU_Decomp is
    -- TODO : Add remaining stuff, with appropriate pre/postconditions
 
    -- Test the functions within this package
-   procedure Test;
+   procedure Test_Child;
 
 private
 
