@@ -13,6 +13,7 @@ package Cookbook.Float_Containers is
 
    function Identity_Matrix (Size : Size_Type) return Matrix renames Implementation.Identity_Matrix;
 
-   -- TODO : Implement unit tests once matrix functionality has stabilized
+   -- Test the functions within this package
+   procedure Test;
 
 end Cookbook.Float_Containers;
