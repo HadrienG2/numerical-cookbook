@@ -16,6 +16,9 @@ package Cookbook.Generic_Containers is
    overriding function "=" (Left, Right : Matrix) return Boolean
      with
        Pre => (Left'Length (1) = Right'Length (1) and then Left'Length (2) = Right'Length (2));
+   overriding function "=" (Left, Right : Vector) return Boolean
+     with
+       Pre => (Left'Length = Right'Length);
 
    -- Multiplication by a scalar is business as usual
    function "*" (Left : Item_Type; Right : Matrix) return Matrix

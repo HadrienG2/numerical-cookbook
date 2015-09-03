@@ -14,6 +14,18 @@ package body Cookbook.Generic_Containers is
    end "=";
 
 
+   overriding function "=" (Left, Right : Vector) return Boolean is
+   begin
+      for Row in Left'Range loop
+         if Left (Row) /= Right (Row - Left'First + Right'First) then
+            return False;
+         end if;
+      end loop;
+
+      return True;
+   end "=";
+
+
    function "*" (Left : Item_Type; Right : Matrix) return Matrix is
    begin
       return Result : Matrix (Right'Range (1), Right'Range (2)) do
