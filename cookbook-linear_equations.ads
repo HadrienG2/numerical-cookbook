@@ -26,6 +26,7 @@ package Cookbook.Linear_Equations is
        Post => (for all Row in Mat'Range (1) =>
                   (Mat (Row, Col_1) = Mat'Old (Row, Col_2) and then Mat (Row, Col_2) = Mat'Old (Row, Col_1)));
 
-   -- TODO : Implement unit tests once utility functions have stabilized
+   -- Test the functions within this package
+   procedure Test;
 
 end Cookbook.Linear_Equations;
