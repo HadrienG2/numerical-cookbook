@@ -278,7 +278,7 @@ package body Cookbook.Linear_Equations.LU_Decomp is
    end Unscramble;
 
 
-   procedure Test is
+   procedure Test_Child is
       package Test_Runner is new Cookbook.Test;
       use Test_Runner;
 
@@ -429,11 +429,11 @@ package body Cookbook.Linear_Equations.LU_Decomp is
       end Test_Linear_Equations_Package;
    begin
       Test_Package (To_Entity_Name ("Linear_Equations.LU_Decomp"), Test_Linear_Equations_Package'Access);
-   end Test;
+   end Test_Child;
 
 begin
 
    -- Automatically test the package when it is included
-   Test;
+   Test_Child;
 
 end Cookbook.Linear_Equations.LU_Decomp;

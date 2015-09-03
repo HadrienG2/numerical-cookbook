@@ -19,6 +19,6 @@ package Cookbook.Linear_Equations.Gauss_Jordan is
        Post => (Matrix * Matrix'Old = F_Containers.Identity_Matrix (Matrix'Length (1)));
 
    -- Test the functions within this package
-   procedure Test;
+   procedure Test_Child;
 
 end Cookbook.Linear_Equations.Gauss_Jordan;

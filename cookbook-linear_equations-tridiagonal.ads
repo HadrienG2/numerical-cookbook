@@ -20,6 +20,6 @@ package Cookbook.Linear_Equations.Tridiagonal is
        Post => ("*"'Result'Length = Matrix_Size (Left));
 
    -- Test the functions within this package
-   procedure Test;
+   procedure Test_Child;
 
 end Cookbook.Linear_Equations.Tridiagonal;
