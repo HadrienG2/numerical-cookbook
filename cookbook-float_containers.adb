@@ -2,20 +2,37 @@ with Cookbook.Test;
 
 package body Cookbook.Float_Containers is
 
+   use type Matrix, Vector;
+
    procedure Test is
       package Test_Runner is new Cookbook.Test;
       use Test_Runner;
 
+      -- TODO : Add tests for all containers operations (as specified in generic_containers.ads)
+
       procedure Test_Identity_Matrix is
       begin
-         -- TODO : Test the identity matrix generation routine
-      end Test_Identity_Matrix;
+         -- NOTE : 0x0 identity matrices are forbidden by a precondition, so we don't have to test for them
 
-      -- TODO : Add tests for all containers operations (as specified in generic_containers.ads)
+         declare
+            Id_1x1 : constant Matrix := Identity_Matrix (1);
+         begin
+            Test_Element_Property (Id_1x1'Length (1) = 1, "should produce 1x1 identity matrices");
+            Test_Element_Property (Id_1x1'Length (2) = 1, "should produce 1x1 identity matrices");
+            Test_Element_Property (Id_1x1 (Id_1x1'First (1), Id_1x1'First (2)) = 1.0, "should produce 1x1 identity matrices");
+         end;
+
+         declare
+            Id_2x2 : constant Matrix := Identity_Matrix (2);
+         begin
+            Test_Element_Property (Id_2x2 = ((1.0, 0.0), (0.0, 1.0)), "should produce 2x2 identity matrices");
+         end;
+      end Test_Identity_Matrix;
 
       procedure Test_Containers_Package is
       begin
          Test_Package_Element (To_Entity_Name ("Identity_Matrix"), Test_Identity_Matrix'Access);
+
          -- TODO : Run tests for all containers operations (as specified in generic_containers.ads)
       end Test_Containers_Package;
    begin
