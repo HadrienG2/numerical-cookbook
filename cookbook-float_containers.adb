@@ -4,8 +4,11 @@ package body Cookbook.Float_Containers is
 
    use type Matrix, Vector;
 
+
+   package Test_Runner is new Cookbook.Test;
+
+
    procedure Test is
-      package Test_Runner is new Cookbook.Test;
       use Test_Runner;
 
       -- TODO : Add tests for all containers operations (as specified in generic_containers.ads)
@@ -42,6 +45,6 @@ package body Cookbook.Float_Containers is
 begin
 
    -- Automatically test the package when it is included
-   Test;
+   Test_Runner.Elaboration_Self_Test (Test'Access);
 
 end Cookbook.Float_Containers;
