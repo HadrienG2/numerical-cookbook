@@ -1,6 +1,6 @@
 # numerical-cookbook
 
-An Ada 2012 re-implementation of some of the codes featured in Numerical Recipes, 3rd Edition.
+This is an Ada 2012 re-implementation of some of the codes featured in Numerical Recipes, 3rd Edition. You can learn more about it in the [Wiki](../../wiki/Home)
 
 ## Compiler configuration and portability
 
@@ -12,8 +12,8 @@ Portability is a goal, so if you find the library to break on another architectu
 
 ## Licensing and reuse
 
-Please feel free to study this code and make use of it for your own projects. I have not yet decided which license I will put it under (see issue #2), so at this point copyright laws prevent you from simply copying and pasting it, but I will get around this when I get a release that starts looking like a finished product.
+Please feel free to study this code and make use of it for your own projects. The library is released under the GPLv3 license, so you can include it in any kind of free software project.
 
-Also, please note that this code is optimized for simplicity, clarity and correctness, not scalability and performance. In particular, the use of stack-allocated vectors and matrices means that large datasets (say, 400x400 matrices) will cause stack overflows on most OS/compiler combinations. Also, for production use, you will probably want to disable the automated package self-testing that currently occurs during package elaboration, which I have set up to help with development (but see issue #1).
+However, please also note that this code is optimized for simplicity, clarity and correctness, not scalability and performance. In particular, the use of stack-allocated vectors and matrices means that large datasets (say, 400x400 matrices) will cause stack overflows on most OS/compiler combinations. Also, for production use, you will probably want to disable the automated package self-testing that currently occurs during package elaboration, which I have set up to help with development. This may be done by flipping a boolean flag in Cookbook.Test.
 
-Incidentally, the above also means that patches that solely revolve around making things faster or more scalable at the expense of code readability, such as manual algorithm parallelization, will be rejected. However, once I get around the licensing issue, please feel free to develop a more scalable fork of this library.
+Incidentally, the above also means that patches that solely revolve around making things faster or more scalable at the expense of code readability, such as manual algorithm parallelization, will be rejected. However, feel free to develop a more scalable fork of this library, and if you tell me about it, I will be happy to link to it here.
