@@ -31,9 +31,9 @@ package body Cookbook.Float_Containers is
 
       procedure Test_Containers_Package is
       begin
-         Test_Package_Element (To_Entity_Name ("Identity_Matrix"), Test_Identity_Matrix'Access);
-
+         Test_Package_Element (To_Entity_Name ("Vector_Equality"), Test_Vector_Equality'Access);
          -- TODO : Run tests for all containers operations (as specified in generic_containers.ads)
+         Test_Package_Element (To_Entity_Name ("Identity_Matrix"), Test_Identity_Matrix'Access);
       end Test_Containers_Package;
    begin
       Test_Package (To_Entity_Name ("Float_Containers"), Test_Containers_Package'Access);
