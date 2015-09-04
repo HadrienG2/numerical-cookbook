@@ -278,8 +278,10 @@ package body Cookbook.Linear_Equations.LU_Decomp is
    end Unscramble;
 
 
+   package Test_Runner is new Cookbook.Test;
+
+
    procedure Test_Child is
-      package Test_Runner is new Cookbook.Test;
       use Test_Runner;
 
       procedure Test_Crout_LU is
@@ -434,6 +436,6 @@ package body Cookbook.Linear_Equations.LU_Decomp is
 begin
 
    -- Automatically test the package when it is included
-   Test_Child;
+   Test_Runner.Elaboration_Self_Test (Test_Child'Access);
 
 end Cookbook.Linear_Equations.LU_Decomp;
