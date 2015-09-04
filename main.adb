@@ -1,3 +1,21 @@
+-- Copyright 2015 Hadrien Grasland
+--
+-- This file is part of Numerical Cookbook.
+--
+-- Numerical Cookbook is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- Numerical Cookbook is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with Numerical Cookbook.  If not, see <http://www.gnu.org/licenses/>.
+
+
 with Cookbook;
 with Cookbook.Float_Containers;
 with Cookbook.Float_Utility;
@@ -21,7 +39,7 @@ procedure Main is
       end if;
    end Relatively_Equal;
 
-   -- Instantiate the cookbook
+   -- Instantiate the whole cookbook
    package Float_Cookbook is new Cookbook (Float_Type => Float, "=" => Relatively_Equal, Index_Type => Positive, Size_Type => Natural);
    package Float_Utility is new Float_Cookbook.Float_Utility;
    package Float_Containers is new Float_Cookbook.Float_Containers;
