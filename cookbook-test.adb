@@ -7,6 +7,12 @@ package body Cookbook.Test is
 
    Global_Element_Prefix : Entity_Name;
 
+   procedure Elaboration_Self_Test (Testing_Procedure : not null access procedure) is
+   begin
+      if Test_On_Elaboration then
+         Testing_Procedure.all;
+      end if;
+   end Elaboration_Self_Test;
 
    function Assertions_Enabled return Boolean is
    begin

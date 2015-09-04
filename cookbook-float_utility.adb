@@ -2,8 +2,9 @@ with Cookbook.Test;
 
 package body Cookbook.Float_Utility is
 
+   package Test_Runner is new Cookbook.Test;
+
    procedure Test is
-      package Test_Runner is new Cookbook.Test;
       use Test_Runner;
 
       procedure Test_Max is
@@ -51,6 +52,6 @@ package body Cookbook.Float_Utility is
 begin
 
    -- Automatically test the package when it is included
-   Test;
+   Test_Runner.Elaboration_Self_Test (Test'Access);
 
 end Cookbook.Float_Utility;
