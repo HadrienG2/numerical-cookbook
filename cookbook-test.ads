@@ -4,6 +4,10 @@ with Ada.Strings.Bounded;
 generic
 package Cookbook.Test is
 
+   -- The boolean flag centrally enables or disables package self-testing by the function below
+   Test_On_Elaboration : Boolean := True;
+   procedure Elaboration_Self_Test (Testing_Procedure : not null access procedure);
+
    -- Check if assertions are currently enabled
    function Assertions_Enabled return Boolean;
 

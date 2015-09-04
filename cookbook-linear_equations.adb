@@ -18,8 +18,10 @@ package body Cookbook.Linear_Equations is
    end Swap_Cols;
 
 
+   package Test_Runner is new Cookbook.Test;
+
+
    procedure Test is
-      package Test_Runner is new Cookbook.Test;
       use Test_Runner;
 
       procedure Test_Swap_Rows is
@@ -72,6 +74,6 @@ package body Cookbook.Linear_Equations is
 begin
 
    -- Automatically test the package when it is included
-   Test;
+   Test_Runner.Elaboration_Self_Test (Test'Access);
 
 end Cookbook.Linear_Equations;

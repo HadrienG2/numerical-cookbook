@@ -123,8 +123,10 @@ package body Cookbook.Linear_Equations.Gauss_Jordan is
    end Gauss_Jordan_Elimination;
 
 
+   package Test_Runner is new Cookbook.Test;
+
+
    procedure Test_Child is
-      package Test_Runner is new Cookbook.Test;
       use Test_Runner;
 
       procedure Test_Gauss_Jordan is
@@ -184,6 +186,6 @@ package body Cookbook.Linear_Equations.Gauss_Jordan is
 begin
 
    -- Automatically test the package when it is included
-   Test_Child;
+   Test_Runner.Elaboration_Self_Test (Test_Child'Access);
 
 end Cookbook.Linear_Equations.Gauss_Jordan;
