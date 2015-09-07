@@ -314,7 +314,8 @@ package body Cookbook.Linear_Equations.LU_Decomp is
                Test_Element_Property (False, "should throw an exception when encountering a singular matrix");
             end;
          exception
-            when Singular_Matrix => Test_Element_Property (True, "should throw an exception upon encountering a singular matrix");
+            when Singular_Matrix =>
+               Test_Element_Property (True, "should throw an exception upon encountering a singular matrix");
          end;
 
          -- Try a normal 1x1 matrix
@@ -341,7 +342,8 @@ package body Cookbook.Linear_Equations.LU_Decomp is
                Test_Element_Property (False, "should throw an exception when encountering a singular matrix");
             end;
          exception
-            when Singular_Matrix => Test_Element_Property (True, "should throw an exception upon encountering a singular matrix");
+            when Singular_Matrix =>
+               Test_Element_Property (True, "should throw an exception upon encountering a singular matrix");
          end;
 
          -- Try it with a lower triangular 2x2 matrix
@@ -445,7 +447,6 @@ package body Cookbook.Linear_Equations.LU_Decomp is
          Test_Package_Element (To_Entity_Name ("Solve"), Test_Solve'Access);
          Test_Package_Element (To_Entity_Name ("Inverse_Matrix"), Test_Inverse'Access);
          Test_Package_Element (To_Entity_Name ("Determinant"), Test_Determinant'Access);
-         -- TODO : Test other LU-related methods as they are added
       end Test_Linear_Equations_Package;
    begin
       Test_Package (To_Entity_Name ("Linear_Equations.LU_Decomp"), Test_Linear_Equations_Package'Access);
