@@ -29,6 +29,38 @@ package body Cookbook.Float_Containers is
    procedure Test is
       use Test_Runner;
 
+      procedure Test_Vector_Equality is
+      begin
+         declare
+            Vec0_1 : constant Vector (55 .. 54) := (others => <>);
+            Vec0_2 : constant Vector (2 .. 1) := (others => <>);
+         begin
+            Test_Element_Property (Vec0_1 = Vec0_2, "should work with vectors of size 0");
+         end;
+
+         declare
+            Vec1_1 : constant Vector (42 .. 42) := (42 => 0.5);
+            Vec1_2 : constant Vector (2 .. 2) := (2 => 0.5);
+            Vec1_3 : constant Vector (16 .. 16) := (16 => 0.6);
+         begin
+            Test_Element_Property (Vec1_1 = Vec1_2, "should work with equal vectors of size 1");
+            Test_Element_Property (Vec1_1 /= Vec1_3, "should work with distinct vectors of size 1");
+         end;
+
+         declare
+            Vec_2_1 : constant Vector (5 .. 6) := (0.1, 0.2);
+            Vec_2_2 : constant Vector (86 .. 87) := (0.1, 0.2);
+            Vec_2_3 : constant Vector (100 .. 101) := (0.2, 0.2);
+            Vec_2_4 : constant Vector (52 .. 53) := (0.1, 0.3);
+            Vec_2_5 : constant Vector (24 .. 25) := (0.5, 0.6);
+         begin
+            Test_Element_Property (Vec_2_1 = Vec_2_2, "should work with equal vectors of size 2");
+            Test_Element_Property (Vec_2_1 /= Vec_2_3, "should work with vectors of size 2 differing by first component");
+            Test_Element_Property (Vec_2_1 /= Vec_2_4, "should work with vectors of size 2 differing by second component");
+            Test_Element_Property (Vec_2_1 /= Vec_2_5, "should work with vectors of size 2 differing by both components");
+         end;
+      end Test_Vector_Equality;
+
       -- TODO : Add tests for all containers operations (as specified in generic_containers.ads)
 
       procedure Test_Identity_Matrix is
