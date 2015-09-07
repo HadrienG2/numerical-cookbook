@@ -47,7 +47,7 @@ package body Cookbook.Float_Containers is
          declare
             Mat1x1_1 : constant Matrix (3 .. 3, 6 .. 6) := (3 => (6 => 0.1));
             Mat1x1_2 : constant Matrix (7 .. 7, 2 .. 2) := (7 => (2 => 0.1));
-            Mat1x1_3 : constant Matrix (69 .. 69, 50 .. 50) := (7 => (2 => 0.2));
+            Mat1x1_3 : constant Matrix (69 .. 69, 50 .. 50) := (69 => (50 => 0.2));
          begin
             Test_Element_Property (Mat1x1_1 = Mat1x1_2, "should work with equal 1x1 matrices");
             Test_Element_Property (Mat1x1_1 /= Mat1x1_3, "should work with distinct 1x1 matrices");
@@ -170,6 +170,45 @@ package body Cookbook.Float_Containers is
          end;
       end Test_Scalar_Vector_Multiply;
 
+      procedure Test_Matrix_Matrix_Multiply is
+      begin
+         declare
+            Mat0x0_1 : constant Matrix (2 .. 1, 7 .. 6) := (others => (others => <>));
+            Mat0x0_2 : constant Matrix (12 .. 11, 36 .. 35) := (others => (others => <>));
+            Mat1x0 : constant Matrix (42 .. 42, 80 .. 79) := (others => (others => <>));
+            Mat0x1 : constant Matrix (80 .. 79, 62 .. 62) := (others => (others => <>));
+         begin
+            Test_Element_Property (Mat0x0_1 * Mat0x0_2 = Mat0x0_1, "should work with zero-sized matrices");
+            Test_Element_Property (Mat0x1 * Mat1x0 = Mat0x0_1, "should work with zero-sized matrices");
+            -- NOTE : The last product would actually produce a 1x1 matrix full of garbage, if it worked !
+         end;
+
+         declare
+            Mat1x1_1 : constant Matrix (3 .. 3, 6 .. 6) := (3 => (6 => 0.1));
+            Mat1x1_2 : constant Matrix (69 .. 69, 50 .. 50) := (69 => (50 => 0.2));
+         begin
+            Test_Element_Property (Mat1x1_1 * Mat1x1_2 = (3 => (50 => 0.02)), "should work with 1x1 matrices");
+         end;
+
+         declare
+            Mat1x1 : constant Matrix (3 .. 3, 6 .. 6) := (3 => (6 => 0.1));
+            Mat1x2 : constant Matrix (5 .. 5, 10 .. 11) := (5 => (3.1, 4.1));
+         begin
+            Test_Element_Property (Mat1x1 * Mat1x2 = (3 => (0.31, 0.41)), "should work with 1x1 and 1x2 matrices");
+         end;
+
+         declare
+            Mat2x1 : constant Matrix (7 .. 8, 2 .. 2) := ((2 => 3.2), (2 => 4.2));
+            Mat1x1 : constant Matrix (3 .. 3, 6 .. 6) := (3 => (6 => 0.1));
+            Mat1x2 : constant Matrix (5 .. 5, 10 .. 11) := (5 => (3.1, 4.1));
+         begin
+            Test_Element_Property (Mat2x1 * Mat1x1 = ((6 => 0.32), (6 => 0.42)), "should work with 2x1 and 1x1 matrices");
+            Test_Element_Property (Mat2x1 * Mat1x2 = ((9.92,  13.12),
+                                                      (13.02, 17.22)), "should work with 2x1 and 1x2 matrices");
+            Test_Element_Property (Mat1x2 * Mat2x1 = (5 => (2 => 27.14)), "should work with 1x2 and 2x1 matrices");
+         end;
+      end Test_Matrix_Matrix_Multiply;
+
       -- TODO : Add tests for all containers operations (as specified in generic_containers.ads)
 
       procedure Test_Identity_Matrix is
@@ -197,6 +236,7 @@ package body Cookbook.Float_Containers is
          Test_Package_Element (To_Entity_Name ("Vector_Equality"), Test_Vector_Equality'Access);
          Test_Package_Element (To_Entity_Name ("Scalar_Matrix_Multiply"), Test_Scalar_Matrix_Multiply'Access);
          Test_Package_Element (To_Entity_Name ("Scalar_Vector_Multiply"), Test_Scalar_Vector_Multiply'Access);
+         Test_Package_Element (To_Entity_Name ("Matrix_Matrix_Multiply"), Test_Matrix_Matrix_Multiply'Access);
          -- TODO : Run tests for all containers operations (as specified in generic_containers.ads)
          Test_Package_Element (To_Entity_Name ("Identity_Matrix"), Test_Identity_Matrix'Access);
       end Test_Containers_Package;
