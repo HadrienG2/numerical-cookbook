@@ -180,7 +180,7 @@ package body Cookbook.Float_Containers is
          begin
             Test_Element_Property (Mat0x0_1 * Mat0x0_2 = Mat0x0_1, "should work with zero-sized matrices");
             Test_Element_Property (Mat0x1 * Mat1x0 = Mat0x0_1, "should work with zero-sized matrices");
-            -- NOTE : The last product would actually produce a 1x1 matrix full of garbage, if it worked !
+            -- NOTE : The last product would actually produce a 1x1 matrix full of garbage, even if it worked !
          end;
 
          declare
@@ -209,7 +209,81 @@ package body Cookbook.Float_Containers is
          end;
       end Test_Matrix_Matrix_Multiply;
 
-      -- TODO : Add tests for all containers operations (as specified in generic_containers.ads)
+      procedure Test_Matrix_Vector_Multiply is
+      begin
+         declare
+            Mat0x0 : constant Matrix (2 .. 1, 7 .. 6) := (others => (others => <>));
+            Vec0 : constant Vector (55 .. 54) := (others => <>);
+         begin
+            Test_Element_Property (Mat0x0 * Vec0 = Vec0, "should work will null matrices and vectors");
+         end;
+
+         declare
+            Mat1x1 : constant Matrix (3 .. 3, 6 .. 6) := (3 => (6 => 0.1));
+            Mat2x1 : constant Matrix (7 .. 8, 2 .. 2) := ((2 => 3.2), (2 => 4.2));
+            Vec1 : constant Vector (42 .. 42) := (42 => 0.5);
+         begin
+            Test_Element_Property (Mat1x1 * Vec1 = (3 => 0.05), "should work with 1x1 matrices and vectors of size 1");
+            Test_Element_Property (Mat2x1 * Vec1 = (1.6, 2.1), "should work with 2x1 matrices and vectors of size 1");
+         end;
+
+         declare
+            Mat1x2 : constant Matrix (5 .. 5, 10 .. 11) := (5 => (3.1, 4.1));
+            Vec_2 : constant Vector (5 .. 6) := (0.1, 0.2);
+         begin
+            Test_Element_Property (Mat1x2 * Vec_2 = (5 => 1.13), "should work with 1x2 matrices and vectors of size 2");
+         end;
+      end Test_Matrix_Vector_Multiply;
+
+      procedure Test_Vector_Matrix_Multiply is
+      begin
+         declare
+            Vec0 : constant Vector (55 .. 54) := (others => <>);
+            Mat0x0 : constant Matrix (2 .. 1, 7 .. 6) := (others => (others => <>));
+         begin
+            Test_Element_Property (Vec0 * Mat0x0 = Vec0, "should work will null matrices and vectors");
+         end;
+
+         declare
+            Vec1 : constant Vector (42 .. 42) := (42 => 0.5);
+            Mat1x1 : constant Matrix (3 .. 3, 6 .. 6) := (3 => (6 => 0.1));
+            Mat1x2 : constant Matrix (5 .. 5, 10 .. 11) := (5 => (3.1, 4.1));
+         begin
+            Test_Element_Property (Vec1 * Mat1x1 = (42 => 0.05), "should work with vectors of size 1 and 1x1 matrices");
+            Test_Element_Property (Vec1 * Mat1x2 = (1.55, 2.05), "should work with vectors of size 1 and 1x2 matrices");
+         end;
+
+         declare
+            Vec_2 : constant Vector (5 .. 6) := (0.1, 0.2);
+            Mat2x1 : constant Matrix (7 .. 8, 2 .. 2) := ((2 => 3.2), (2 => 4.2));
+         begin
+            Test_Element_Property (Vec_2 * Mat2x1 = (1 => 1.16), "should work with vectors of size 2 and 2x1 matrices");
+         end;
+      end Test_Vector_Matrix_Multiply;
+
+      procedure Test_Vector_Vector_Multiply is
+      begin
+         declare
+            Vec0_1 : constant Vector (55 .. 54) := (others => <>);
+            Vec0_2 : constant Vector (2 .. 1) := (others => <>);
+         begin
+            Test_Element_Property (Vec0_1 * Vec0_2 = 0.0, "should work with null vectors (!)");
+         end;
+
+         declare
+            Vec1_1 : constant Vector (42 .. 42) := (42 => 0.5);
+            Vec1_2 : constant Vector (16 .. 16) := (16 => 0.6);
+         begin
+            Test_Element_Property (Vec1_1 * Vec1_2 = 0.3, "should work with vectors of size 1");
+         end;
+
+         declare
+            Vec_2_1 : constant Vector (5 .. 6) := (0.1, 0.2);
+            Vec_2_2 : constant Vector (24 .. 25) := (0.5, 0.6);
+         begin
+            Test_Element_Property (Vec_2_1 * Vec_2_2 = 0.17, "should work with vectors of size 2");
+         end;
+      end Test_Vector_Vector_Multiply;
 
       procedure Test_Identity_Matrix is
       begin
@@ -237,7 +311,9 @@ package body Cookbook.Float_Containers is
          Test_Package_Element (To_Entity_Name ("Scalar_Matrix_Multiply"), Test_Scalar_Matrix_Multiply'Access);
          Test_Package_Element (To_Entity_Name ("Scalar_Vector_Multiply"), Test_Scalar_Vector_Multiply'Access);
          Test_Package_Element (To_Entity_Name ("Matrix_Matrix_Multiply"), Test_Matrix_Matrix_Multiply'Access);
-         -- TODO : Run tests for all containers operations (as specified in generic_containers.ads)
+         Test_Package_Element (To_Entity_Name ("Matrix_Vector_Multiply"), Test_Matrix_Vector_Multiply'Access);
+         Test_Package_Element (To_Entity_Name ("Vector_Matrix_Multiply"), Test_Vector_Matrix_Multiply'Access);
+         Test_Package_Element (To_Entity_Name ("Vector_Vector_Multiply"), Test_Vector_Vector_Multiply'Access);
          Test_Package_Element (To_Entity_Name ("Identity_Matrix"), Test_Identity_Matrix'Access);
       end Test_Containers_Package;
    begin
