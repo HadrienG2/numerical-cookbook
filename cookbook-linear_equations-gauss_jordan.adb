@@ -156,7 +156,8 @@ package body Cookbook.Linear_Equations.Gauss_Jordan is
             Gauss_Jordan_Elimination (Singular);
             Test_Element_Property (False, "should throw an exception when encountering a singular matrix");
          exception
-            when Singular_Matrix => Test_Element_Property (True, "should throw an exception upon encountering a singular matrix");
+            when Singular_Matrix =>
+               Test_Element_Property (True, "should throw an exception upon encountering a singular matrix");
          end;
 
          -- Try inverting a basic 1x1 matrix, with and without a right-hand side

@@ -31,9 +31,8 @@ package Cookbook.Generic_Containers is
    type Matrix is array (Index_Type range <>, Index_Type range <>) of Item_Type;
 
    -- Comparison uses the custom equality operator defined in cookbook.ads
-   overriding function "=" (Left, Right : Matrix) return Boolean
-     with
-       Pre => (Left'Length (1) = Right'Length (1) and then Left'Length (2) = Right'Length (2));
+   overriding function "=" (Left, Right : Matrix) return Boolean;
+   overriding function "=" (Left, Right : Vector) return Boolean;
 
    -- Multiplication by a scalar is business as usual
    function "*" (Left : Item_Type; Right : Matrix) return Matrix

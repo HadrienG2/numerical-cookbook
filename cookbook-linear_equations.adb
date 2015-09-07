@@ -42,6 +42,18 @@ package body Cookbook.Linear_Equations is
    procedure Test is
       use Test_Runner;
 
+      procedure Test_Square_Matrix is
+         Mat0x0 : constant F_Containers.Matrix (42 .. 41, 13 .. 12) := (others => (others => <>));
+         Mat0x1 : constant F_Containers.Matrix (2 .. 1, 90 .. 90) := (others => (others => <>));
+         Mat1x0 : constant F_Containers.Matrix (8 .. 8, 5 .. 4) := (others => (others => <>));
+         Mat1x1 : constant F_Containers.Matrix (82 .. 82, 12 .. 12) := (others => (others => <>));
+      begin
+         Test_Element_Property (Is_Square_Matrix (Mat0x0), "should work with 0x0 matrices");
+         Test_Element_Property (not Is_Square_Matrix (Mat0x1), "should work with 0x1 matrices");
+         Test_Element_Property (not Is_Square_Matrix (Mat1x0), "should work with 1x0 matrices");
+         Test_Element_Property (Is_Square_Matrix (Mat1x1), "should work with 1x1 matrices");
+      end Test_Square_Matrix;
+
       procedure Test_Swap_Rows is
          Mat : F_Containers.Matrix (68 .. 70, 55 .. 57) := ((4.0, 2.0, 1.0),
                                                             (7.0, 5.0, 3.0),
@@ -82,6 +94,7 @@ package body Cookbook.Linear_Equations is
 
       procedure Test_Linear_Equations_Package is
       begin
+         Test_Package_Element (To_Entity_Name ("Is_Square_Matrix"), Test_Square_Matrix'Access);
          Test_Package_Element (To_Entity_Name ("Swap_Rows"), Test_Swap_Rows'Access);
          Test_Package_Element (To_Entity_Name ("Swap_Cols"), Test_Swap_Cols'Access);
       end Test_Linear_Equations_Package;

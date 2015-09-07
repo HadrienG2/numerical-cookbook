@@ -20,12 +20,32 @@ package body Cookbook.Generic_Containers is
 
    overriding function "=" (Left, Right : Matrix) return Boolean is
    begin
+      if Left'Length (1) /= Right'Length (1) or else Left'Length (2) /= Right'Length (2) then
+         return False;
+      end if;
+
       for Row in Left'Range (1) loop
          for Col in Left'Range (2) loop
             if Left (Row, Col) /= Right (Row - Left'First (1) + Right'First (1), Col - Left'First (2) + Right'First (2)) then
                return False;
             end if;
          end loop;
+      end loop;
+
+      return True;
+   end "=";
+
+
+   overriding function "=" (Left, Right : Vector) return Boolean is
+   begin
+      if Left'Length /= Right'Length then
+         return False;
+      end if;
+
+      for Row in Left'Range loop
+         if Left (Row) /= Right (Row - Left'First + Right'First) then
+            return False;
+         end if;
       end loop;
 
       return True;
