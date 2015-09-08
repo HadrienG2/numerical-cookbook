@@ -15,16 +15,20 @@ project NumericalCookbook is
    end Pretty_Printer;
 
    package Builder is
-      for Default_Switches ("ada") use ("-s", "-j2", "-k", "-g");
+      for Default_Switches ("ada") use ("-s", "-k", "-j8", "-g");
    end Builder;
 
    package Compiler is
-      for Default_Switches ("ada") use ("-gnatwad.fh.h.kl.st.u.w", "-gnatVa", "-gnato", "-g", "-gnat12", "-gnatyaAbBdCefhiklnOptx", "-gnata", "-gnatE", "-fstack-check", "-ftest-coverage", "-fprofile-arcs");
+      for Default_Switches ("ada") use ("-gnatwad.fh.h.kl.st.u.w", "-gnatVa", "-gnat12", "-gnatyaAbBdCefhiklnOptx", "-gnatE", "-g", "-ftest-coverage", "-fprofile-arcs", "-fstack-check", "-gnato", "-gnata");
    end Compiler;
 
    package Binder is
       for Default_Switches ("ada") use ("-E");
    end Binder;
+
+   package Check is
+      for Default_Switches ("ada") use ("-d");
+   end Check;
 
 end NumericalCookbook;
 
