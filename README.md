@@ -10,7 +10,7 @@ This library uses a rolling release model. Code that is published in the master 
 
 The main.adb source file gives an example of how to instantiate the library. All you should need to build and use this library is an Ada 2012 compliant compiler, such as recent releases of GNAT GPL from AdaCore (distributed at <http://libre.adacore.com>).
 
-The library was developed and tested with GNAT GPL 2015 on Linux x86_64. It uses a couple of GNAT-specific extensions to Ada, but never in a fashion that is vital to the code operation. An example of such use is the suppression of false alarms from compiler warnings.
+The library was developed and tested with GNAT GPL 2015 on Linux x86_64 and Windows 10 x86_64. It uses a couple of GNAT-specific extensions to Ada, but never in a fashion that is vital to the code operation. An example of such use is the suppression of false alarms from compiler warnings.
 
 Portability is a goal, so if you find the library to break on another architecture, operating system, or compiler, please report this as a bug.
 
