@@ -13,3 +13,4 @@ gcov_input.txt
 *.bexch
 main
 *.exe
+*.TMP
