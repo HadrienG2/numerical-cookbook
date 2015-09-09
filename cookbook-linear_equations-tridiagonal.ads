@@ -22,21 +22,31 @@ package Cookbook.Linear_Equations.Tridiagonal is
    -- Ideally, we would specify the matrix offset and size, and avoid storing nonexistent matrix values
    --
    -- However, the rules of Ada 2012 (RM12 3.8.12/3) forbid the use of expressions containing multiple discriminants. So we have to do without.
-   type Tridiagonal_Matrix (First_Index, Last_Index : Index_Type) is
+   --
+   -- The tridiagonal matrix is stored in the structure as follows :
+   --
+   -- Diagonal (First_Row)                 Upper_Diagonal (First_Row)           0                                   0
+   -- Lower_Diagonal (First_Row + 1)       Diagonal (First_Row + 1)             Upper_Diagonal(First_Row + 1)       0
+   -- 0                                    Lower_Diagonal (First_Row + 2)       Diagonal (First_Row + 2)            Upper_Diagonal (First_Row + 2)
+   --
+   type Tridiagonal_Matrix (First_Row, Last_Row : Index_Type) is
       record
-         Lower_Diagonal : F_Containers.Vector (First_Index .. Last_Index); -- Lower_Diagonal(First_Index) is undefined and will not be read
-         Diagonal : F_Containers.Vector (First_Index .. Last_Index);
-         Upper_Diagonal : F_Containers.Vector (First_Index .. Last_Index); -- Upper_Diagonal(Last_Index) is undefined and will not be read
+         Lower_Diagonal : F_Containers.Vector (First_Row .. Last_Row); -- Lower_Diagonal(First_Row) is undefined and will not be read
+         Diagonal : F_Containers.Vector (First_Row .. Last_Row);
+         Upper_Diagonal : F_Containers.Vector (First_Row .. Last_Row); -- Upper_Diagonal(Last_Row) is undefined and will not be read
       end record;
 
    -- We need a couple of basic operators for tridiagonal matrices as defined above
    function Matrix_Size (Matrix : Tridiagonal_Matrix) return Size_Type is
-     (Matrix.Last_Index - Matrix.First_Index + 1);
+     (Matrix.Last_Row - Matrix.First_Row + 1);
    function "*" (Left : Tridiagonal_Matrix; Right : F_Containers.Vector) return F_Containers.Vector
      with
        Pre => (Matrix_Size (Left) = Right'Length),
        Post => ("*"'Result'Length = Matrix_Size (Left));
 
+   -- The efficiency of solving dridiagonal systems comes at the price of decreased stability : a zero pivot may be encountered even if
+   -- the matrix is not singular. Specialized exceptions will be used by the tridiagonal solver to clarify this.
+   Zero_Pivot_Encountered : exception;
    function Solve (Matrix : Tridiagonal_Matrix; Right_Hand_Vector : F_Containers.Vector) return F_Containers.Vector
      with
        Pre => (Matrix_Size (Matrix) = Right_Hand_Vector'Length),
