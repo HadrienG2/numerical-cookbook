@@ -1,9 +1,21 @@
 project NumericalCookbook is
 
    for Main use ("main.adb");
+   type Build_Kind_Type is
+      ("Unchecked_Release", "Checked_Release", "Debug_With_Coverage");
+   Build_Kind : Build_Kind_Type := external ("Build_Kind", "Debug_With_Coverage");
 
    package Linker is
-      for Default_Switches ("ada") use ("-g", "-fprofile-generate");
+
+      case Build_Kind is
+
+         when "Unchecked_Release" =>
+
+         when "Checked_Release" =>
+
+         when "Debug_With_Coverage" =>
+            for Default_Switches ("ada") use ("-g", "-fprofile-generate");
+      end case;
    end Linker;
 
    package Ide is
@@ -15,16 +27,60 @@ project NumericalCookbook is
    end Pretty_Printer;
 
    package Builder is
-      for Default_Switches ("ada") use ("-s", "-j2", "-k", "-g");
+
+      case Build_Kind is
+
+         when "Unchecked_Release" =>
+            for Default_Switches ("ada") use ("-s", "-k", "-j8");
+
+         when "Checked_Release" =>
+            for Default_Switches ("ada") use ("-s", "-k", "-j8");
+
+         when "Debug_With_Coverage" =>
+            for Default_Switches ("ada") use ("-s", "-k", "-j8", "-g");
+      end case;
    end Builder;
 
    package Compiler is
-      for Default_Switches ("ada") use ("-gnatwad.fh.h.kl.st.u.w", "-gnatVa", "-gnato", "-g", "-gnat12", "-gnatyaAbBdCefhiklnOptx", "-gnata", "-gnatE", "-fstack-check", "-ftest-coverage", "-fprofile-arcs");
+
+      case Build_Kind is
+
+         when "Unchecked_Release" =>
+            for Default_Switches ("ada") use ("-gnatwad.fh.h.kl.st.u.w", "-gnatVa", "-gnat12", "-gnatyaAbBdCefhiklnOptx", "-O3");
+
+         when "Checked_Release" =>
+            for Default_Switches ("ada") use ("-gnatwad.fh.h.kl.st.u.w", "-gnatVa", "-gnat12", "-gnatyaAbBdCefhiklnOptx", "-gnatE", "-fstack-check", "-gnato", "-gnata", "-O3");
+
+         when "Debug_With_Coverage" =>
+            for Default_Switches ("ada") use ("-gnatwad.fh.h.kl.st.u.w", "-gnatVa", "-gnat12", "-gnatyaAbBdCefhiklnOptx", "-gnatE", "-g", "-ftest-coverage", "-fprofile-arcs", "-fstack-check", "-gnato", "-gnata");
+      end case;
    end Compiler;
 
    package Binder is
-      for Default_Switches ("ada") use ("-E");
+
+      case Build_Kind is
+
+         when "Unchecked_Release" =>
+
+         when "Checked_Release" =>
+
+         when "Debug_With_Coverage" =>
+            for Default_Switches ("ada") use ("-E");
+      end case;
    end Binder;
+
+   package Check is
+
+      case Build_Kind is
+
+         when "Unchecked_Release" =>
+
+         when "Checked_Release" =>
+
+         when "Debug_With_Coverage" =>
+            for Default_Switches ("ada") use ("-d");
+      end case;
+   end Check;
 
 end NumericalCookbook;
 
