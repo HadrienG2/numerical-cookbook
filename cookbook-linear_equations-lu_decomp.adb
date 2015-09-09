@@ -65,7 +65,7 @@ package body Cookbook.Linear_Equations.LU_Decomp is
                   -- If all elements in the row are zero, the matrix is singular and it's pointless to continue.
                   -- Otherwise, save the scaling of that row and move on.
                   if Current_Row_Magnitude = 0.0 then
-                     raise Singular_Matrix;
+                     raise Singular_Matrix with "Zero pivot encountered in the input matrix => Input is trivially singular.";
                   else
                      Rows_Scaling (Row) := 1.0 / Current_Row_Magnitude;
                   end if;
@@ -95,7 +95,7 @@ package body Cookbook.Linear_Equations.LU_Decomp is
                      -- If we can't find anything better than zero, it means that the matrix is singular.
                      -- Unlike NR, I choose to consistently raise an exception when singular matrices are encountered.
                      if Scaled_Pivot_Abs = 0.0 then
-                        raise Singular_Matrix;
+                        raise Singular_Matrix with "Zero pivot encountered in the processed matrix => Singular matrix or numerical instability.";
                      end if;
                   end;
 
