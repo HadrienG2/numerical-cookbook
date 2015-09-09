@@ -12,7 +12,9 @@ The main.adb source file gives an example of how to instantiate the library. All
 
 The library was developed and tested with GNAT GPL 2015 on Linux x86_64 and Windows 10 x86_64. It uses a couple of GNAT-specific extensions to Ada, but never in a fashion that is vital to the code operation. An example of such use is the suppression of false alarms from compiler warnings.
 
-Portability is a goal, so if you find the library to break on another architecture, operating system, or compiler, please report this as a bug.
+For fellow GNAT users, we also provide [a gprbuild-compatible project file](https://github.com/Neolander/numerical-cookbook/blob/master/numericalcookbook.gpr), which features the recommended compiler switches to build the library in typical scenarii : unoptimized debug builds with gcov coverage information, release builds with full code optimizations and run-time checks (to test for optimization-induced defects), and release builds without any run-time check for maximal performance.
+
+Portability is a goal, so if you find the library to break on another architecture, operating system, or compiler, please report this as a bug. Contributions enabling users of other compilers to use this library more easily are also welcome.
 
 ## Licensing and reuse
 
