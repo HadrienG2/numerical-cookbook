@@ -22,7 +22,7 @@ package body Cookbook.Linear_Equations.Tridiagonal is
 
    function "*" (Left : Tridiagonal_Matrix; Right : F_Containers.Vector) return F_Containers.Vector is
       -- Quick access to the indices of the left and right components
-      subtype Left_Index is Index_Type range Left.First_Index .. Left.Last_Index;
+      subtype Left_Index is Index_Type range Left.First_Row .. Left.Last_Row;
       subtype Right_Row is Index_Type range Right'First .. Right'Last;
       function Left_Col_To_Right_Row (Col : Left_Index) return Right_Row is (Col - Left_Index'First + Right_Row'First);
    begin
@@ -65,9 +65,48 @@ package body Cookbook.Linear_Equations.Tridiagonal is
 
 
    function Solve (Matrix : Tridiagonal_Matrix; Right_Hand_Vector : F_Containers.Vector) return F_Containers.Vector is
+      subtype Mat_Index is Index_Type range Matrix.First_Row .. Matrix.Last_Row;
+      subtype RHS_Row is Index_Type range Right_Hand_Vector'First .. Right_Hand_Vector'Last;
+      function Mat_Index_To_RHS_Row (Index : Mat_Index) return RHS_Row is (Index - Mat_Index'First + RHS_Row'First);
+
+      First_Diagonal_Element : constant Float_Type := Matrix.Diagonal (Matrix.First_Row);
    begin
-      -- TODO : Reuse and rewrite NR's code
-   end;
+      -- If the first diagonal element is null, the algorithm cannot proceed
+      if First_Diagonal_Element = 0.0 then
+         raise Zero_Pivot_Encountered with "First diagonal matrix element is zero, please rewrite your equation set as a lower-order one.";
+      end if;
+
+      -- Otherwise, find the result by LU decomposition, forward- and backsubstitution
+      return Result : F_Containers.Vector (Matrix.First_Row .. Matrix.Last_Row) do
+         declare
+            Bet : Float_Type := First_Diagonal_Element;
+            Gam : F_Containers.Vector (Mat_Index);
+         begin
+            -- The first element is special from the point of view of forward substitution, as there is no lower-diagonal element on this row
+            Result (Matrix.First_Row) := Right_Hand_Vector (RHS_Row'First) / Bet;
+
+            -- Perform forward substitution using the remainder of the matrix
+            for Mat_Row in Index_Type'Succ (Matrix.First_Row) .. Matrix.Last_Row loop
+               Gam (Mat_Row) := Matrix.Upper_Diagonal (Mat_Row) / Bet;
+               Bet := Matrix.Diagonal (Mat_Row) - Matrix.Lower_Diagonal (Mat_Row) * Gam (Mat_Row);
+               if Bet = 0.0 then
+                  raise Zero_Pivot_Encountered with "Singular matrix or pivoting error.";
+               end if;
+               Result (Mat_Row) := (Right_Hand_Vector (Mat_Index_To_RHS_Row (Mat_Row)) -
+                                      Matrix.Lower_Diagonal (Mat_Row) * Result (Mat_Index'Pred (Mat_Row))) / Bet;
+            end loop;
+
+            -- Perform backsubstitution
+            for Mat_Row in reverse Matrix.First_Row .. Index_Type'Pred (Matrix.Last_Row) loop
+               declare
+                  Next_Mat_Row : constant Mat_Index := Mat_Index'Succ (Mat_Row);
+               begin
+                  Result (Mat_Row) := Result (Mat_Row) - Gam (Next_Mat_Row) * Result (Mat_Index_To_RHS_Row (Next_Mat_Row));
+               end;
+            end loop;
+         end;
+      end return;
+   end Solve;
 
 
    package Test_Runner is new Cookbook.Test;
@@ -80,8 +119,8 @@ package body Cookbook.Linear_Equations.Tridiagonal is
       begin
          -- Test that null matrices (special case !) work
          declare
-            Mat_0x0 : constant Tridiagonal_Matrix := (First_Index => Index_Type'Last,
-                                                      Last_Index => Index_Type'Pred (Index_Type'Last),
+            Mat_0x0 : constant Tridiagonal_Matrix := (First_Row => Index_Type'Last,
+                                                      Last_Row => Index_Type'Pred (Index_Type'Last),
                                                       Lower_Diagonal => (others => <>),
                                                       Diagonal => (others => <>),
                                                       Upper_Diagonal => (others => <>));
@@ -93,8 +132,8 @@ package body Cookbook.Linear_Equations.Tridiagonal is
 
          -- Test that 1x1 matrices (special case !) work
          declare
-            Mat_1x1 : constant Tridiagonal_Matrix := (First_Index => Index_Type'First,
-                                                      Last_Index => Index_Type'First,
+            Mat_1x1 : constant Tridiagonal_Matrix := (First_Row => Index_Type'First,
+                                                      Last_Row => Index_Type'First,
                                                       Lower_Diagonal => (others => 42.0),
                                                       Diagonal => (others => 1.5),
                                                       Upper_Diagonal => (others => 42.0));
@@ -106,8 +145,8 @@ package body Cookbook.Linear_Equations.Tridiagonal is
 
          -- Test that 2x2 matrices (special case !) work
          declare
-            Mat_2x2 : constant Tridiagonal_Matrix := (First_Index => 55,
-                                                      Last_Index => 56,
+            Mat_2x2 : constant Tridiagonal_Matrix := (First_Row => 55,
+                                                      Last_Row => 56,
                                                       Lower_Diagonal => (42.0, 33.0),  -- aka ((44.0, 1.25),
                                                       Diagonal => (44.0, 0.5),         --      (33.0, 0.5))
                                                       Upper_Diagonal => (1.25, 42.0));
@@ -119,8 +158,8 @@ package body Cookbook.Linear_Equations.Tridiagonal is
 
          -- Test that 3x3 matrices (single loop execution) work
          declare
-            Mat_3x3 : constant Tridiagonal_Matrix := (First_Index => 32,
-                                                      Last_Index => 34,
+            Mat_3x3 : constant Tridiagonal_Matrix := (First_Row => 32,
+                                                      Last_Row => 34,
                                                       Lower_Diagonal => (42.0, 1.0, 2.0),   -- aka ((3.0, 6.0, 0.0),
                                                       Diagonal => (3.0, 4.0, 5.0),          --      (1.0, 4.0, 7.0),
                                                       Upper_Diagonal => (6.0, 7.0, 42.0));  --      (0.0, 2.0, 5.0))
@@ -132,8 +171,8 @@ package body Cookbook.Linear_Equations.Tridiagonal is
 
          -- Test that 4x4 matrices (multiple loop executions) work
          declare
-            Mat_4x4 : constant Tridiagonal_Matrix := (First_Index => 250,
-                                                      Last_Index => 253,                          -- aka ((11.0,  7.0,  0.0,  0.0),
+            Mat_4x4 : constant Tridiagonal_Matrix := (First_Row => 250,
+                                                      Last_Row => 253,                            -- aka ((11.0,  7.0,  0.0,  0.0),
                                                       Lower_Diagonal => (42.0, 14.0, 13.0, 12.0), --      (14.0, 10.0,  6.0,  0.0),
                                                       Diagonal => (11.0, 10.0, 9.0, 8.0),         --      ( 0.0, 13.0,  9.0,  5.0))
                                                       Upper_Diagonal => (7.0, 6.0, 5.0, 42.0));   --      ( 0.0,  0.0, 12.0,  8.0))
