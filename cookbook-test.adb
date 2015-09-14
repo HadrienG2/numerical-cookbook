@@ -61,11 +61,6 @@ package body Cookbook.Test is
 
       -- Take note that the package test is over
       Global_Package_Test_Running := False;
-   exception
-      when Ada.Assertions.Assertion_Error =>
-         raise;
-      when others =>
-         pragma Assert (False, "The testing procedure for " & To_String (Full_Package_Name) & " should not throw exceptions");
    end Test_Package;
 
 
@@ -81,11 +76,6 @@ package body Cookbook.Test is
 
       -- Take note that the element test is over
       Global_Element_Test_Running := False;
-   exception
-      when Ada.Assertions.Assertion_Error =>
-         raise;
-      when others =>
-         pragma Assert (False, "The testing procedure for " & To_String (Full_Element_Name) & " should not throw exceptions");
    end Test_Package_Element;
 
 
