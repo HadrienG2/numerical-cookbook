@@ -45,7 +45,9 @@ package Cookbook.Linear_Equations.Tridiagonal is
        Post => ("*"'Result'Length = Matrix_Size (Left));
 
    -- The efficiency of solving dridiagonal systems comes at the price of decreased stability : a zero pivot may be encountered even if
-   -- the matrix is not singular. Specialized exceptions will be used by the tridiagonal solver to clarify this.
+   -- the matrix is not singular. For example, this algorithm will fail on the invertible 2x2 matrix ((0.0, 1.0), (1.0, 0.0)).
+   --
+   -- The tridiagonal solver throws a special exception in place of Singular_Matrix in order to clarify this.
    Zero_Pivot_Encountered : exception;
    function Solve (Matrix : Tridiagonal_Matrix; Right_Hand_Vector : F_Containers.Vector) return F_Containers.Vector
      with

@@ -180,7 +180,7 @@ package body Cookbook.Float_Containers is
          begin
             Test_Element_Property (Mat0x0_1 * Mat0x0_2 = Mat0x0_1, "should work with zero-sized matrices");
             Test_Element_Property (Mat0x1 * Mat1x0 = Mat0x0_1, "should work with zero-sized matrices");
-            -- NOTE : The last product would actually produce a 1x1 matrix full of garbage, even if it worked !
+            -- NOTE : The last product would actually produce a 1x1 matrix of implementation-dependent garbage, even if it worked !
          end;
 
          declare
