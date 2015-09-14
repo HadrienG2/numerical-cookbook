@@ -49,7 +49,8 @@ package Cookbook.Linear_Equations.Tridiagonal is
    Zero_Pivot_Encountered : exception;
    function Solve (Matrix : Tridiagonal_Matrix; Right_Hand_Vector : F_Containers.Vector) return F_Containers.Vector
      with
-       Pre => (Matrix_Size (Matrix) = Right_Hand_Vector'Length),
+       Pre => (Matrix_Size (Matrix) = Right_Hand_Vector'Length and then
+                     Matrix_Size (Matrix) > 0),
        Post => (Solve'Result'Length = Right_Hand_Vector'Length and then
                   Matrix * Solve'Result = Right_Hand_Vector);
 
