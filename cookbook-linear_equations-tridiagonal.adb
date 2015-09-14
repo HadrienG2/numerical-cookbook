@@ -77,34 +77,38 @@ package body Cookbook.Linear_Equations.Tridiagonal is
       end if;
 
       -- Otherwise, find the result by LU decomposition, forward- and backsubstitution
-      return Result : F_Containers.Vector (Matrix.First_Row .. Matrix.Last_Row) do
-         declare
-            Bet : Float_Type := First_Diagonal_Element;
-            Gam : F_Containers.Vector (Mat_Index);
-         begin
-            -- The first element is special from the point of view of forward substitution, as there is no lower-diagonal element on this row
-            Result (Matrix.First_Row) := Right_Hand_Vector (RHS_Row'First) / Bet;
+      return Result : F_Containers.Vector (Mat_Index) do
+         -- The first element is special from the point of view of forward substitution, as there is no lower-diagonal element on this row
+         Result (Matrix.First_Row) := Right_Hand_Vector (RHS_Row'First) / First_Diagonal_Element;
 
-            -- Perform forward substitution using the remainder of the matrix
-            for Mat_Row in Index_Type'Succ (Matrix.First_Row) .. Matrix.Last_Row loop
-               Gam (Mat_Row) := Matrix.Upper_Diagonal (Mat_Row) / Bet;
-               Bet := Matrix.Diagonal (Mat_Row) - Matrix.Lower_Diagonal (Mat_Row) * Gam (Mat_Row);
-               if Bet = 0.0 then
-                  raise Zero_Pivot_Encountered with "Singular matrix or pivoting error.";
-               end if;
-               Result (Mat_Row) := (Right_Hand_Vector (Mat_Index_To_RHS_Row (Mat_Row)) -
-                                      Matrix.Lower_Diagonal (Mat_Row) * Result (Mat_Index'Pred (Mat_Row))) / Bet;
-            end loop;
+         if Matrix_Size (Matrix) >= 2 then
+            declare
+               Bet : Float_Type := First_Diagonal_Element;
+               Gam : F_Containers.Vector (Mat_Index);
+               Second_Mat_Index : constant Mat_Index := Mat_Index'Succ (Matrix.First_Row);
+               Mat_Index_Before_Last : constant Mat_Index := Mat_Index'Pred (Matrix.Last_Row);
+            begin
+               -- Perform forward substitution using the remainder of the matrix
+               for Mat_Row in Second_Mat_Index .. Matrix.Last_Row loop
+                  Gam (Mat_Row) := Matrix.Upper_Diagonal (Mat_Row) / Bet;
+                  Bet := Matrix.Diagonal (Mat_Row) - Matrix.Lower_Diagonal (Mat_Row) * Gam (Mat_Row);
+                  if Bet = 0.0 then
+                     raise Zero_Pivot_Encountered with "Singular matrix or pivoting error.";
+                  end if;
+                  Result (Mat_Row) := (Right_Hand_Vector (Mat_Index_To_RHS_Row (Mat_Row)) -
+                                         Matrix.Lower_Diagonal (Mat_Row) * Result (Mat_Index'Pred (Mat_Row))) / Bet;
+               end loop;
 
-            -- Perform backsubstitution
-            for Mat_Row in reverse Matrix.First_Row .. Index_Type'Pred (Matrix.Last_Row) loop
-               declare
-                  Next_Mat_Row : constant Mat_Index := Mat_Index'Succ (Mat_Row);
-               begin
-                  Result (Mat_Row) := Result (Mat_Row) - Gam (Next_Mat_Row) * Result (Mat_Index_To_RHS_Row (Next_Mat_Row));
-               end;
-            end loop;
-         end;
+               -- Perform backsubstitution
+               for Mat_Row in reverse Matrix.First_Row .. Mat_Index_Before_Last loop
+                  declare
+                     Next_Mat_Row : constant Mat_Index := Mat_Index'Succ (Mat_Row);
+                  begin
+                     Result (Mat_Row) := Result (Mat_Row) - Gam (Next_Mat_Row) * Result (Mat_Index_To_RHS_Row (Next_Mat_Row));
+                  end;
+               end loop;
+            end;
+         end if;
       end return;
    end Solve;
 
@@ -183,10 +187,40 @@ package body Cookbook.Linear_Equations.Tridiagonal is
          end;
       end Test_MatVecMul;
 
+      procedure Test_Solve is
+      begin
+         -- Test with a singular 1x1 matrix
+         declare
+            Mat_1x1 : constant Tridiagonal_Matrix := (First_Row => 13,
+                                                      Last_Row => 13,
+                                                      Lower_Diagonal => (others => 42.0),
+                                                      Diagonal => (others => 0.0),          -- aka ((0.0))
+                                                      Upper_Diagonal => (others => 42.0));
+            Vec_1 : constant F_Containers.Vector (89 .. 89) := (others => 0.5);
+         begin
+            -- TODO : Compute the matrix and test for exceptions
+         end;
+
+         -- Test with a trivial 1x1 matrix
+         declare
+            Mat_1x1 : constant Tridiagonal_Matrix := (First_Row => 57,
+                                                      Last_Row => 57,
+                                                      Lower_Diagonal => (others => 42.0),
+                                                      Diagonal => (others => 4.5),          -- aka ((4.5))
+                                                      Upper_Diagonal => (others => 42.0));
+            Vec_1 : constant F_Containers.Vector (23 .. 23) := (others => 9.0);
+            Result : constant F_Containers.Vector := Solve (Mat_1x1, Vec_1);
+         begin
+            Test_Element_Property (Result (Result'First) = 2.0, "should work with 1x1 matrices");
+         end;
+
+         -- TODO : Test tridiagonal system solver
+      end Test_Solve;
+
       procedure Test_Tridiagonal_Package is
       begin
          Test_Package_Element (To_Entity_Name ("Matrix_Vector_Multiplication"), Test_MatVecMul'Access);
-         -- TODO : Intégrer des tests pour les autres fonctionnalités impliquant des matrices tridiagonales.
+         Test_Package_Element (To_Entity_Name ("Solve"), Test_Solve'Access);
       end Test_Tridiagonal_Package;
    begin
       Test_Package (To_Entity_Name ("Linear_Equations.Tridiagonal"), Test_Tridiagonal_Package'Access);
