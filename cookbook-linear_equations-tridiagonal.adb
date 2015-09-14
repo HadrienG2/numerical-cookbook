@@ -83,20 +83,24 @@ package body Cookbook.Linear_Equations.Tridiagonal is
 
          if Matrix_Size (Matrix) >= 2 then
             declare
-               Bet : Float_Type := First_Diagonal_Element;
-               Gam : F_Containers.Vector (Mat_Index);
+               Beta : Float_Type := First_Diagonal_Element;
+               Gamma : F_Containers.Vector (Mat_Index);
                Second_Mat_Index : constant Mat_Index := Mat_Index'Succ (Matrix.First_Row);
                Mat_Index_Before_Last : constant Mat_Index := Mat_Index'Pred (Matrix.Last_Row);
             begin
                -- Perform forward substitution using the remainder of the matrix
                for Mat_Row in Second_Mat_Index .. Matrix.Last_Row loop
-                  Gam (Mat_Row) := Matrix.Upper_Diagonal (Mat_Row) / Bet;
-                  Bet := Matrix.Diagonal (Mat_Row) - Matrix.Lower_Diagonal (Mat_Row) * Gam (Mat_Row);
-                  if Bet = 0.0 then
-                     raise Zero_Pivot_Encountered with "Singular matrix or pivoting error.";
-                  end if;
-                  Result (Mat_Row) := (Right_Hand_Vector (Mat_Index_To_RHS_Row (Mat_Row)) -
-                                         Matrix.Lower_Diagonal (Mat_Row) * Result (Mat_Index'Pred (Mat_Row))) / Bet;
+                  declare
+                     Prev_Mat_Row : constant Mat_Index := Mat_Index'Pred (Mat_Row);
+                  begin
+                     Gamma (Mat_Row) := Matrix.Upper_Diagonal (Prev_Mat_Row) / Beta;
+                     Beta := Matrix.Diagonal (Mat_Row) - Matrix.Lower_Diagonal (Mat_Row) * Gamma (Mat_Row);
+                     if Beta = 0.0 then
+                        raise Zero_Pivot_Encountered with "Singular matrix or pivoting error.";
+                     end if;
+                     Result (Mat_Row) := (Right_Hand_Vector (Mat_Index_To_RHS_Row (Mat_Row)) -
+                                            Matrix.Lower_Diagonal (Mat_Row) * Result (Prev_Mat_Row)) / Beta;
+                  end;
                end loop;
 
                -- Perform backsubstitution
@@ -104,7 +108,7 @@ package body Cookbook.Linear_Equations.Tridiagonal is
                   declare
                      Next_Mat_Row : constant Mat_Index := Mat_Index'Succ (Mat_Row);
                   begin
-                     Result (Mat_Row) := Result (Mat_Row) - Gam (Next_Mat_Row) * Result (Mat_Index_To_RHS_Row (Next_Mat_Row));
+                     Result (Mat_Row) := Result (Mat_Row) - Gamma (Next_Mat_Row) * Result (Next_Mat_Row);
                   end;
                end loop;
             end;
@@ -198,10 +202,17 @@ package body Cookbook.Linear_Equations.Tridiagonal is
                                                       Upper_Diagonal => (others => 42.0));
             Vec_1 : constant F_Containers.Vector (89 .. 89) := (others => 0.5);
          begin
-            -- TODO : Compute the matrix and test for exceptions
+            declare
+               Result : constant F_Containers.Vector := Solve (Mat_1x1, Vec_1) with Unreferenced;
+            begin
+               Test_Element_Property (False, "should throw an exception upon encountering a 1x1 singular matrix");
+            end;
+         exception
+            when Zero_Pivot_Encountered =>
+               Test_Element_Property (True, "should throw exception Zero_Pivot_Encountered upon encountering a 1x1 singular matrix");
          end;
 
-         -- Test with a trivial 1x1 matrix
+         -- Test with a non-singular 1x1 matrix
          declare
             Mat_1x1 : constant Tridiagonal_Matrix := (First_Row => 57,
                                                       Last_Row => 57,
@@ -214,7 +225,63 @@ package body Cookbook.Linear_Equations.Tridiagonal is
             Test_Element_Property (Result (Result'First) = 2.0, "should work with 1x1 matrices");
          end;
 
-         -- TODO : Test tridiagonal system solver
+         -- Test with a nontrivially-singular 2x2 matrix
+         declare
+            Mat_2x2 : constant Tridiagonal_Matrix := (First_Row => 2,
+                                                      Last_Row => 3,
+                                                      Lower_Diagonal => (42.0, 5.1),
+                                                      Diagonal => (5.1, 5.1),          -- aka ((5.1, 5.1),
+                                                      Upper_Diagonal => (5.1, 42.0));  --      (5.1, 5.1))
+            Vec_2 : constant F_Containers.Vector (66 .. 67) := (1.1, 2.2);
+         begin
+            declare
+               Result : constant F_Containers.Vector := Solve (Mat_2x2, Vec_2) with Unreferenced;
+            begin
+               Test_Element_Property (False, "should throw an exception upon encountering a nontrivial 2x2 singular matrix");
+            end;
+         exception
+            when Zero_Pivot_Encountered =>
+               Test_Element_Property (True, "should throw exception Zero_Pivot_Encountered upon encountering a nontrivial 2x2 singular matrix");
+         end;
+
+         -- Test with a lower-triangular 2x2 matrix
+         declare
+            Mat_2x2 : constant Tridiagonal_Matrix := (First_Row => 100,
+                                                      Last_Row => 101,
+                                                      Lower_Diagonal => (42.0, 1.1),
+                                                      Diagonal => (0.5, 3.0),          -- aka ((0.5, 0.0),
+                                                      Upper_Diagonal => (0.0, 42.0));  --      (1.1, 3.0))
+            Vec_2 : constant F_Containers.Vector (1 .. 2) := (30.0, 78.0);
+            Result : constant F_Containers.Vector := Solve (Mat_2x2, Vec_2);
+         begin
+            Test_Element_Property (Result = (60.0, 4.0), "should work with lower-triangular 2x2 matrices");
+         end;
+
+         -- Test with an upper-triangular 2x2 matrix
+         declare
+            Mat_2x2 : constant Tridiagonal_Matrix := (First_Row => 30,
+                                                      Last_Row => 31,
+                                                      Lower_Diagonal => (42.0, 0.0),
+                                                      Diagonal => (3.3, 2.0),          -- aka ((3.3, 5.5),
+                                                      Upper_Diagonal => (5.5, 42.0));  --      (0.0, 2.0))
+            Vec_2 : constant F_Containers.Vector (7 .. 8) := (55.0, 8.0);
+            Result : constant F_Containers.Vector := Solve (Mat_2x2, Vec_2);
+         begin
+            Test_Element_Property (Result = (10.0, 4.0), "should work with upper-triangular 2x2 matrices");
+         end;
+
+         -- Test with a 3x3 matrix
+         declare
+            Mat_3x3 : constant Tridiagonal_Matrix := (First_Row => 13,
+                                                      Last_Row => 15,
+                                                      Lower_Diagonal => (42.0, -1.0, 1.0),   -- aka (( 2.0,  1.0,  0.0),
+                                                      Diagonal => (2.0, 2.0, 2.0),           --      (-1.0,  2.0, -1.0),
+                                                      Upper_Diagonal => (1.0, -1.0, 42.0));  --      ( 0.0,  1.0,  2.0))
+            Vec_3 : constant F_Containers.Vector (69 .. 71) := (5.8, 0.0, 14.6);
+            Result : constant F_Containers.Vector := Solve (Mat_3x3, Vec_3);
+         begin
+            Test_Element_Property (Result = (1.2, 3.4, 5.6), "shoult work with 3x3 matrices");
+         end;
       end Test_Solve;
 
       procedure Test_Tridiagonal_Package is
