@@ -14,3 +14,6 @@ gcov_input.txt
 main
 *.exe
 *.TMP
+
+# Ignore draft files
+*~
