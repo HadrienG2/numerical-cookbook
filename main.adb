@@ -23,6 +23,7 @@ with Cookbook.Linear_Equations;
 with Cookbook.Linear_Equations.Gauss_Jordan;
 with Cookbook.Linear_Equations.LU_Decomp;
 with Cookbook.Linear_Equations.Tridiagonal;
+with Cookbook.Linear_Equations.Band_Diagonal;
 
 procedure Main is
    -- We take float equality as equality up to a difference of one significant digit for nonzero numbers,
@@ -48,6 +49,7 @@ procedure Main is
    package Gauss_Jordan is new Linear_Equations.Gauss_Jordan with Unreferenced;
    package LU_Decomp is new Linear_Equations.LU_Decomp with Unreferenced;
    package Tridiagonal is new Linear_Equations.Tridiagonal with Unreferenced;
+   package Band_Diagonal is new Linear_Equations.Band_Diagonal with Unreferenced;
 begin
    null;
 end Main;
